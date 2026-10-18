@@ -190,3 +190,36 @@ body {
 .text-muted {
     color: #a3b2c7;
 }
+
+.badge-in_progress {
+    background-color: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #dbeafe;
+}
+
+.btn-status {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-block;
+    margin-right: 4px;
+}
+
+.btn-status-process {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+.btn-status-process:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-status-complete {
+    background-color: #16a34a;
+    color: #ffffff;
+}
+.btn-status-complete:hover {
+    background-color: #15803d;
+}

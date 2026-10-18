@@ -1,17 +1,36 @@
 <?php
 namespace Support\Index;
 
-class Model extends \Kotchasan\Model
+class Model
 {
+    private static function connectDB()
+    {
+        $dir = ROOT_PATH . 'datas';
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+        $dbPath = $dir . '/helpdesk.sql';
+        $pdo = new \PDO("sqlite:" . $dbPath);
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS tickets (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            detail TEXT,
+            status TEXT DEFAULT 'pending',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )");
+
+        return $pdo;
+    }
+
     public static function getTickets()
     {
         try {
-            $model = new static;
-            return $model->db()->createQuery()
-                ->select('*')
-                ->from('tickets')
-                ->order('id DESC')
-                ->execute();
+            $pdo = self::connectDB();
+            $stmt = $pdo->query("SELECT * FROM tickets ORDER BY id DESC");
+            return $stmt->fetchAll();
         } catch (\Throwable $e) {
             return [];
         }
@@ -20,15 +39,28 @@ class Model extends \Kotchasan\Model
     public static function addTicket($save)
     {
         try {
-            $model = new static;
-            $db = $model->db();
-            $db->query("CREATE TABLE IF NOT EXISTS tickets (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                detail TEXT,
-                status TEXT DEFAULT 'pending'
-            )");
-            return $db->insert(static::getTableName('tickets'), $save);
+            $pdo = self::connectDB();
+            $stmt = $pdo->prepare("INSERT INTO tickets (title, detail, status, created_at) VALUES (:title, :detail, :status, :created_at)");
+            return $stmt->execute([
+                ':title'      => $save['title'],
+                ':detail'     => $save['detail'] ?? '',
+                ':status'     => $save['status'] ?? 'pending',
+                ':created_at' => date('Y-m-d H:i:s')
+            ]);
+        } catch (\Throwable $e) {
+            exit('เกิดข้อผิดพลาดในการบันทึก: ' . $e->getMessage());
+        }
+    }
+
+    public static function updateStatus($id, $status)
+    {
+        try {
+            $pdo = self::connectDB();
+            $stmt = $pdo->prepare("UPDATE tickets SET status = :status WHERE id = :id");
+            return $stmt->execute([
+                ':status' => $status,
+                ':id'     => (int)$id
+            ]);
         } catch (\Throwable $e) {
             return false;
         }
@@ -37,10 +69,9 @@ class Model extends \Kotchasan\Model
     public static function deleteTicket($id)
     {
         try {
-            return static::db()->delete(
-                static::getTableName('tickets'),
-                array('id', (int)$id)
-            );
+            $pdo = self::connectDB();
+            $stmt = $pdo->prepare("DELETE FROM tickets WHERE id = :id");
+            return $stmt->execute([':id' => (int)$id]);
         } catch (\Throwable $e) {
             return false;
         }

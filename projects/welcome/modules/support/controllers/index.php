@@ -32,6 +32,19 @@ class Controller extends \Kotchasan\Controller
             header('Location: index.php');
             exit;
         }
+        
+        if ($action === 'status') {
+            $id = $request->request('id')->toInt();
+            $status = $request->request('status')->topic();
+
+            if ($id > 0 && in_array($status, ['pending', 'in_progress', 'completed'])) {
+                \Support\Index\Model::updateStatus($id, $status);
+            }
+
+            if (ob_get_length()) { ob_clean(); }
+            header('Location: index.php');
+            exit;
+        }
 
         if ($action === 'delete') {
             $id = $request->request('id')->toInt();

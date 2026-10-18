@@ -63,4 +63,21 @@ class View
         <?php
         return ob_get_clean();
     }
+    private static function formatThaiDate($dateStr)
+    {
+        $time = strtotime($dateStr);
+        if (!$time) return $dateStr;
+
+        $thaiMonths = [
+            1 => 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
+            'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'
+        ];
+
+        $day = date('j', $time);
+        $month = $thaiMonths[(int)date('n', $time)];
+        $year = date('Y', $time) + 543;
+        $hourMin = date('H:i', $time);
+
+        return "{$day} {$month} {$year} {$hourMin} น.";
+    }
 }
