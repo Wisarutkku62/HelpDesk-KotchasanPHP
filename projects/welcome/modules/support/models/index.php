@@ -22,6 +22,28 @@ class Model
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )");
 
+        try {
+            $pdo->exec("ALTER TABLE tickets ADD COLUMN user_id INTEGER DEFAULT 0");
+        } catch (\Throwable $e) {}
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            name TEXT NOT NULL,
+            role TEXT DEFAULT 'user',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )");
+
+        $stmt = $pdo->query("SELECT COUNT(*) FROM users");
+        if ($stmt->fetchColumn() == 0) {
+            $pdo->prepare("INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?)")
+                ->execute(['admin', password_hash('admin1234', PASSWORD_DEFAULT), 'ผู้ดูแลระบบ (Admin)', 'admin']);
+            $pdo->prepare("INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?)")
+                ->execute(['staff', password_hash('staff1234', PASSWORD_DEFAULT), 'ช่างไอที (Staff)', 'staff']);
+            $pdo->prepare("INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?)")
+                ->execute(['user', password_hash('user1234', PASSWORD_DEFAULT), 'สมชาย พนักงาน', 'user']);
+        }
         return $pdo;
     }
 
@@ -106,6 +128,40 @@ class Model
             return $stmt->fetch() ?: ['total' => 0, 'pending' => 0, 'in_progress' => 0, 'completed' => 0];
         } catch (\Throwable $e) {
             return ['total' => 0, 'pending' => 0, 'in_progress' => 0, 'completed' => 0];
+        }
+    }
+    
+    public static function login($username, $password)
+    {
+        try {
+            $pdo = self::connectDB();
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE username = :username");
+            $stmt->execute([':username' => $username]);
+            $user = $stmt->fetch();
+
+            if ($user && password_verify($password, $user['password'])) {
+                unset($user['password']);
+                return $user;
+            }
+            return false;
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    public static function register($username, $password, $name, $role = 'user')
+    {
+        try {
+            $pdo = self::connectDB();
+            $stmt = $pdo->prepare("INSERT INTO users (username, password, name, role) VALUES (:username, :password, :name, :role)");
+            return $stmt->execute([
+                ':username' => $username,
+                ':password' => password_hash($password, PASSWORD_DEFAULT),
+                ':name'     => $name,
+                ':role'     => $role
+            ]);
+        } catch (\Throwable $e) {
+            return false;
         }
     }
 }
