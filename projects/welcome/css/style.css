@@ -187,6 +187,7 @@ body {
 .text-center {
     text-align: center;
 }
+
 .text-muted {
     color: #a3b2c7;
 }
@@ -212,6 +213,7 @@ body {
     background-color: #2563eb;
     color: #ffffff;
 }
+
 .btn-status-process:hover {
     background-color: #1d4ed8;
 }
@@ -220,6 +222,74 @@ body {
     background-color: #16a34a;
     color: #ffffff;
 }
+
 .btn-status-complete:hover {
     background-color: #15803d;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f1f5f9;
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-card .stat-title {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.stat-card .stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.stat-card.card-pending {
+    border-left: 4px solid #f59e0b;
+}
+
+.stat-card.card-progress {
+    border-left: 4px solid #2563eb;
+}
+
+.stat-card.card-completed {
+    border-left: 4px solid #16a34a;
+}
+
+.filter-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.filter-input,
+.filter-select {
+    padding: 8px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.filter-input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+    border-color: #4f46e5;
 }

@@ -8,6 +8,12 @@ class Controller extends \Kotchasan\Controller
     public function index(Request $request)
     {
         $action = $request->request('action')->topic();
+        $search = $request->get('search')->topic();
+        $selectedStatus = $request->get('status')->topic();
+        $queryParams = [];
+        if (!empty($search)) { $queryParams[] = 'search=' . urlencode($search); }
+        if (!empty($selectedStatus)) { $queryParams[] = 'status=' . urlencode($selectedStatus); }
+        $redirectUrl = 'index.php?module=support' . (!empty($queryParams) ? '&' . implode('&', $queryParams) : '');
 
         if ($action === 'add') {
             require_once ROOT_PATH . 'projects/welcome/modules/support/views/add.php';
@@ -26,13 +32,12 @@ class Controller extends \Kotchasan\Controller
             if (!empty($save['title'])) {
                 \Support\Index\Model::addTicket($save);
             }
-            if (ob_get_length()) {
-                ob_clean();
-            }
-            header('Location: index.php');
+
+            if (ob_get_length()) { ob_clean(); }
+            header('Location: index.php?module=support');
             exit;
         }
-        
+
         if ($action === 'status') {
             $id = $request->request('id')->toInt();
             $status = $request->request('status')->topic();
@@ -42,7 +47,7 @@ class Controller extends \Kotchasan\Controller
             }
 
             if (ob_get_length()) { ob_clean(); }
-            header('Location: index.php');
+            header('Location: ' . $redirectUrl);
             exit;
         }
 
@@ -52,16 +57,13 @@ class Controller extends \Kotchasan\Controller
                 \Support\Index\Model::deleteTicket($id);
             }
 
-            if (ob_get_length()) {
-                ob_clean();
-            }
-
-            header('Location: index.php');
+            if (ob_get_length()) { ob_clean(); }
+            header('Location: ' . $redirectUrl);
             exit;
         }
-
-        $tickets = \Support\Index\Model::getTickets();
+        $summary = \Support\Index\Model::getSummary();
+        $tickets = \Support\Index\Model::getTickets($search, $selectedStatus);
         $view = new \Support\Index\View();
-        echo $view->render($request, $tickets);
+        echo $view->render($request, $tickets, $summary, $search, $selectedStatus);
     }
 }

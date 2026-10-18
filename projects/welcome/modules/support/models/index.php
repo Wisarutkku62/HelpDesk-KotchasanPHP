@@ -25,16 +25,6 @@ class Model
         return $pdo;
     }
 
-    public static function getTickets()
-    {
-        try {
-            $pdo = self::connectDB();
-            $stmt = $pdo->query("SELECT * FROM tickets ORDER BY id DESC");
-            return $stmt->fetchAll();
-        } catch (\Throwable $e) {
-            return [];
-        }
-    }
 
     public static function addTicket($save)
     {
@@ -48,7 +38,7 @@ class Model
                 ':created_at' => date('Y-m-d H:i:s')
             ]);
         } catch (\Throwable $e) {
-            exit('เกิดข้อผิดพลาดในการบันทึก: ' . $e->getMessage());
+            return false;
         }
     }
 
@@ -74,6 +64,48 @@ class Model
             return $stmt->execute([':id' => (int)$id]);
         } catch (\Throwable $e) {
             return false;
+        }
+    }
+
+    public static function getTickets($search = '', $status = '')
+    {
+        try {
+            $pdo = self::connectDB();
+            $sql = "SELECT * FROM tickets WHERE 1=1";
+            $params = [];
+
+            if (!empty($search)) {
+                $sql .= " AND (title LIKE :search OR detail LIKE :search)";
+                $params[':search'] = '%' . $search . '%';
+            }
+
+            if (!empty($status)) {
+                $sql .= " AND status = :status";
+                $params[':status'] = $status;
+            }
+
+            $sql .= " ORDER BY id DESC";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetchAll();
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+     public static function getSummary()
+    {
+        try {
+            $pdo = self::connectDB();
+            $stmt = $pdo->query("SELECT 
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
+                SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress,
+                SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed
+                FROM tickets");
+            return $stmt->fetch() ?: ['total' => 0, 'pending' => 0, 'in_progress' => 0, 'completed' => 0];
+        } catch (\Throwable $e) {
+            return ['total' => 0, 'pending' => 0, 'in_progress' => 0, 'completed' => 0];
         }
     }
 }
