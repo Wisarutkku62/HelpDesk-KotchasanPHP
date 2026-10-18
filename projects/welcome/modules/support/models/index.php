@@ -1,26 +1,34 @@
 <?php
 namespace Support\Index;
 
-use Kotchasan\Http\Request;
-
 class Model extends \Kotchasan\Model
 {
     public static function getTickets()
     {
-        return \Kotchasan\DB::createQuery()
-            ->select('*')
-            ->from('tickets')
-            ->order('id DESC')
-            ->execute();
+        try {
+            $model = new static;
+            return $model->db()->createQuery()
+                ->select('*')
+                ->from('tickets')
+                ->order('id DESC')
+                ->execute();
+        } catch (\Throwable $e) {
+            return [];
+        }
     }
 
     public static function getTicketById($id)
     {
-        return \Kotchasan\DB::createQuery()
-            ->select('*')
-            ->from('tickets')
-            ->where(array('id', (int)$id))
-            ->first();
+        try {
+            $model = new static;
+            return $model->db()->createQuery()
+                ->select('*')
+                ->from('tickets')
+                ->where(array('id', (int)$id))
+                ->first();
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     public static function addTicket($save)

@@ -1,5 +1,4 @@
 <?php
-
 namespace Support\Index;
 
 use Kotchasan\Http\Request;

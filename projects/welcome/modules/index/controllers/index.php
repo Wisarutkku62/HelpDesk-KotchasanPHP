@@ -31,8 +31,25 @@ class Controller extends \Kotchasan\Controller
      */
   public function index(Request $request)
     {
-       if (!$request->request('module')->exists()) {
-            header('Location: index.php?module=support');
-            exit;
+        $modelFile = ROOT_PATH . 'projects/welcome/modules/support/models/index.php';
+        $viewFile  = ROOT_PATH . 'projects/welcome/modules/support/views/index.php';
+        $ctrlFile  = ROOT_PATH . 'projects/welcome/modules/support/controllers/index.php';
+
+        if (!file_exists($modelFile)) {
+            exit('หาไฟล์ Model ไม่เจอที่: ' . $modelFile);
+        }
+        if (!file_exists($viewFile)) {
+            exit('หาไฟล์ View ไม่เจอที่: ' . $viewFile);
+        }
+        if (!file_exists($ctrlFile)) {
+            exit('หาไฟล์ Controller ไม่เจอที่: ' . $ctrlFile);
+        }
+
+        require_once $modelFile;
+        require_once $viewFile;
+        require_once $ctrlFile;
+
+        $controller = new \Support\Index\Controller();
+        $controller->index($request);
     }
 }
