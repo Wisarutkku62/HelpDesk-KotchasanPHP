@@ -29,9 +29,10 @@ class Controller extends \Kotchasan\Controller
      *
      * @param Request $request The HTTP request object.
      */
-    public function index(Request $request)
+  public function index(Request $request)
     {
-        // Create and render the view for the index page.
-        \Index\Index\View::create()->render();
+       if (!$request->request('module')->exists()) {
+            header('Location: index.php?module=support');
+            exit;
     }
 }

@@ -1,16 +1,49 @@
 <?php
+
 namespace Support\Index;
 
 use Kotchasan\Http\Request;
-use Kotchasan\Html;
 
 class Controller extends \Kotchasan\Controller
 {
-    public function render(Request $request)
+    public function index(Request $request)
     {
-        $tickets = \Support\Index\Model::getTickets();
+        $action = $request->request('action')->topic();
 
+        if ($action === 'add') {
+            require_once ROOT_PATH . 'modules/support/views/add.php';
+            $view = new \Support\Index\AddView();
+            echo $view->render($request);
+            return;
+        }
+
+        if ($action === 'save' && $request->isPost()) {
+            $save = [
+                'title'  => $request->post('title')->topic(),
+                'detail' => $request->post('detail')->topic(),
+                'status' => 'pending'
+            ];
+
+            if (!empty($save['title'])) {
+                \Support\Index\Model::addTicket($save);
+            }
+
+            header('Location: index.php?module=support');
+            exit;
+        }
+
+        if ($action === 'delete') {
+            $id = $request->request('id')->toInt();
+            if ($id > 0) {
+                \Support\Index\Model::deleteTicket($id);
+            }
+
+            header('Location: index.php?module=support');
+            exit;
+        }
+
+        $tickets = \Support\Index\Model::getTickets();
         $view = new \Support\Index\View();
-        return $view->render($request, $tickets);
+        echo $view->render($request, $tickets);
     }
 }
