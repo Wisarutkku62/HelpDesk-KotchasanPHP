@@ -118,7 +118,14 @@ class Controller extends \Kotchasan\Controller
             header('Location: index.php?module=support&action=login');
             exit;
         }
-        
+        if (empty($_SESSION['login_user'])) {
+            header('Location: index.php?module=support&action=login');
+            exit;
+        }
+        $loginUser = $_SESSION['login_user'];
+        $search = $request->get('search')->topic();
+        $selectedStatus = $request->get('status')->topic();
+
         }
         $summary = \Support\Index\Model::getSummary();
         $tickets = \Support\Index\Model::getTickets($search, $selectedStatus);
