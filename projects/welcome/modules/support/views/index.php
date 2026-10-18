@@ -3,7 +3,7 @@ namespace Support\Index;
 
 class View
 {
-    public function render($request, $tickets = [], $summary = [], $search = '', $selectedStatus = '')
+    public function render($request, $tickets = [], $summary = [], $search = '', $selectedStatus = '', $loginUser = [])
     {
         ob_start();
         ?>
@@ -17,10 +17,23 @@ class View
         </head>
         <body>
             <div class="support-container">
+                
+                <!-- Navbar แสดงข้อมูลผู้ใช้ -->
+                <div class="user-bar">
+                    <div class="user-info">
+                        <span>สวัสดีคุณ <strong><?php echo htmlspecialchars($loginUser['name'] ?? 'ผู้ใช้งาน'); ?></strong></span>
+                        <span class="role-badge role-<?php echo $loginUser['role'] ?? 'user'; ?>">
+                            <?php echo strtoupper($loginUser['role'] ?? 'user'); ?>
+                        </span>
+                    </div>
+                    <a href="index.php?module=support&action=logout" class="btn-logout" onclick="return confirm('ยืนยันออกจากระบบ?')">ออกจากระบบ</a>
+                </div>
+
                 <div class="support-header">
                     <h1 class="support-title">ระบบแจ้งซ่อม IT Support</h1>
                     <a href="index.php?module=support&action=add" class="btn btn-primary">+ แจ้งซ่อมใหม่</a>
                 </div>
+                
                 <div class="stats-grid">
                     <div class="stat-card">
                         <span class="stat-title">ทั้งหมด</span>
@@ -39,9 +52,11 @@ class View
                         <span class="stat-value"><?php echo number_format($summary['completed'] ?? 0); ?></span>
                     </div>
                 </div>
+
+                <!-- ฟอร์มค้นหาและกรองสถานะ -->
                 <form method="get" action="index.php" class="filter-bar">
                     <input type="hidden" name="module" value="support">
-                    <input type="text" name="search" class="filter-input" placeholder="ค้นหาหัวข้อหรือรายละเอียด" value="<?php echo htmlspecialchars($search); ?>">
+                    <input type="text" name="search" class="filter-input" placeholder="ค้นหาหัวข้อ หรือรายละเอียด..." value="<?php echo htmlspecialchars($search); ?>">
                     
                     <select name="status" class="filter-select" onchange="this.form.submit()">
                         <option value="" <?php echo empty($selectedStatus) ? 'selected="selected"' : ''; ?>>-- ทุกสถานะ --</option>
@@ -58,12 +73,13 @@ class View
                 <table class="support-table">
                     <thead>
                         <tr>
-                            <th style="width: 70px;">ID</th>
+                            <th style="width: 60px;">ID</th>
                             <th>หัวข้อ</th>
                             <th>รายละเอียด</th>
-                            <th style="width: 140px;">วันที่แจ้ง</th>
-                            <th style="width: 140px;">สถานะ</th>
-                            <th style="width: 160px; text-align: center;">จัดการ</th>
+                            <th style="width: 130px;">ผู้แจ้ง</th>
+                            <th style="width: 130px;">วันที่แจ้ง</th>
+                            <th style="width: 130px;">สถานะ</th>
+                            <th style="width: 150px; text-align: center;">จัดการ</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -73,12 +89,13 @@ class View
                                     <td><strong>#<?php echo $row['id']; ?></strong></td>
                                     <td><strong><?php echo htmlspecialchars($row['title']); ?></strong></td>
                                     <td class="text-muted"><?php echo htmlspecialchars($row['detail']); ?></td>
+                                    <td><span style="font-weight: 500; color: #334155;"><?php echo htmlspecialchars($row['user_name'] ?? 'ทั่วไป'); ?></span></td>
                                     <td style="font-size: 0.85rem;" class="text-muted">
                                         <?php echo !empty($row['created_at']) ? self::formatThaiDate($row['created_at']) : '-'; ?>
                                     </td>
                                     <td>
                                         <span class="badge badge-<?php echo $row['status']; ?>">
-                                             <?php 
+                                                 <?php 
                                                 if ($row['status'] === 'pending') echo 'รอดำเนินการ';
                                                 elseif ($row['status'] === 'in_progress') echo 'กำลังดำเนินการ';
                                                 elseif ($row['status'] === 'completed') echo 'เสร็จสิ้น';
@@ -88,24 +105,31 @@ class View
                                     </td>
                                     <td style="text-align: center;">
                                         <?php 
-                                            // สร้าง URL เปลี่ยนสถานะ/ลบ ให้คงค่า search และ status เดิมไว้
                                             $filterParams = '';
                                             if (!empty($search)) { $filterParams .= '&search=' . urlencode($search); }
                                             if (!empty($selectedStatus)) { $filterParams .= '&status=' . urlencode($selectedStatus); }
+                                            $userRole = $loginUser['role'] ?? 'user';
                                         ?>
-                                        <?php if ($row['status'] === 'pending'): ?>
-                                            <a href="index.php?module=support&action=status&id=<?php echo $row['id']; ?>&status=in_progress<?php echo $filterParams; ?>" class="btn-status btn-status-process">รับเรื่อง</a>
-                                        <?php elseif ($row['status'] === 'in_progress'): ?>
-                                            <a href="index.php?module=support&action=status&id=<?php echo $row['id']; ?>&status=completed<?php echo $filterParams; ?>" class="btn-status btn-status-complete">ปิดงาน</a>
+
+                                        <!-- เฉพาะ Staff และ Admin ที่กดรับเรื่อง/ปิดงานได้ -->
+                                        <?php if (in_array($userRole, ['staff', 'admin'])): ?>
+                                            <?php if ($row['status'] === 'pending'): ?>
+                                                <a href="index.php?module=support&action=status&id=<?php echo $row['id']; ?>&status=in_progress<?php echo $filterParams; ?>" class="btn-status btn-status-process">รับเรื่อง</a>
+                                            <?php elseif ($row['status'] === 'in_progress'): ?>
+                                                <a href="index.php?module=support&action=status&id=<?php echo $row['id']; ?>&status=completed<?php echo $filterParams; ?>" class="btn-status btn-status-complete">ปิดงาน</a>
+                                            <?php endif; ?>
                                         <?php endif; ?>
 
-                                        <a href="index.php?module=support&action=delete&id=<?php echo $row['id']; ?><?php echo $filterParams; ?>" class="btn-delete" onclick="return confirm('ยืนยันการลบรายการนี้?')">ลบ</a>
+                                        <!-- Admin ลบได้ทุกสถานะ / User ลบได้เฉพาะรายการรอดำเนินการตนเอง -->
+                                        <?php if ($userRole === 'admin' || ($userRole === 'user' && $row['user_id'] == $loginUser['id'] && $row['status'] === 'pending')): ?>
+                                            <a href="index.php?module=support&action=delete&id=<?php echo $row['id']; ?><?php echo $filterParams; ?>" class="btn-delete" onclick="return confirm('ยืนยันการลบรายการนี้?')">ลบ</a>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="6" class="text-center text-muted" style="padding: 40px 0;">
+                                <td colspan="7" class="text-center text-muted" style="padding: 40px 0;">
                                     ไม่พบรายการแจ้งซ่อมที่ตรงกับเงื่อนไข
                                 </td>
                             </tr>
@@ -127,6 +151,7 @@ class View
             1 => 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
             'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'
         ];
+
         $day = date('j', $time);
         $month = $thaiMonths[(int)date('n', $time)];
         $year = date('Y', $time) + 543;

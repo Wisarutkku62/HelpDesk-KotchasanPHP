@@ -60,6 +60,65 @@ class Controller extends \Kotchasan\Controller
             if (ob_get_length()) { ob_clean(); }
             header('Location: ' . $redirectUrl);
             exit;
+
+        if ($action === 'login') {
+            require_once ROOT_PATH . 'projects/welcome/modules/support/views/login.php';
+            $view = new \Support\Index\LoginView();
+            echo $view->render();
+            return;
+        }
+
+        if ($action === 'do_login' && $request->isPost()) {
+            $username = $request->post('username')->topic();
+            $password = $request->post('password')->topic();
+
+            $user = \Support\Index\Model::login($username, $password);
+            if ($user) {
+                $_SESSION['login_user'] = $user;
+                header('Location: index.php?module=support');
+                exit;
+            } else {
+                require_once ROOT_PATH . 'projects/welcome/modules/support/views/login.php';
+                $view = new \Support\Index\LoginView();
+                echo $view->render('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+                return;
+            }
+        }
+
+        if ($action === 'register') {
+            require_once ROOT_PATH . 'projects/welcome/modules/support/views/register.php';
+            $view = new \Support\Index\RegisterView();
+            echo $view->render();
+            return;
+        }
+
+        if ($action === 'do_register' && $request->isPost()) {
+            $name = $request->post('name')->topic();
+            $username = $request->post('username')->topic();
+            $password = $request->post('password')->topic();
+            $role = $request->post('role')->topic();
+
+            if (!empty($username) && !empty($password) && !empty($name)) {
+                $success = \Support\Index\Model::register($username, $password, $name, $role);
+                if ($success) {
+                    header('Location: index.php?module=support&action=login');
+                    exit;
+                }
+            }
+
+            require_once ROOT_PATH . 'projects/welcome/modules/support/views/register.php';
+            $view = new \Support\Index\RegisterView();
+            echo $view->render('ไม่สามารถสมัครสมาชิกได้ ชื่อผู้ใช้นี้อาจถูกใช้ไปแล้ว');
+            return;
+        }
+
+        if ($action === 'logout') {
+            unset($_SESSION['login_user']);
+            session_destroy();
+            header('Location: index.php?module=support&action=login');
+            exit;
+        }
+        
         }
         $summary = \Support\Index\Model::getSummary();
         $tickets = \Support\Index\Model::getTickets($search, $selectedStatus);
