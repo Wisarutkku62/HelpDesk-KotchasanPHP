@@ -10,7 +10,7 @@ class Controller extends \Kotchasan\Controller
         $action = $request->request('action')->topic();
 
         if ($action === 'add') {
-            require_once ROOT_PATH . 'modules/support/views/add.php';
+            require_once ROOT_PATH . 'projects/welcome/modules/support/views/add.php';
             $view = new \Support\Index\AddView();
             echo $view->render($request);
             return;
@@ -26,8 +26,10 @@ class Controller extends \Kotchasan\Controller
             if (!empty($save['title'])) {
                 \Support\Index\Model::addTicket($save);
             }
-
-            header('Location: index.php?module=support');
+            if (ob_get_length()) {
+                ob_clean();
+            }
+            header('Location: index.php');
             exit;
         }
 
@@ -37,7 +39,11 @@ class Controller extends \Kotchasan\Controller
                 \Support\Index\Model::deleteTicket($id);
             }
 
-            header('Location: index.php?module=support');
+            if (ob_get_length()) {
+                ob_clean();
+            }
+
+            header('Location: index.php');
             exit;
         }
 

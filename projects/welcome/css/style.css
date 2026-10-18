@@ -133,13 +133,13 @@ body {
 }
 
 .btn-success {
-    background-color: #05cd99;
+    background-color: #4318ff;
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(5, 205, 153, 0.25);
+    box-shadow: 0 6px 16px rgba(67, 24, 255, 0.35);
 }
 
 .btn-success:hover {
-    background-color: #04b385;
+    background-color: #4318ff;
     transform: translateY(-2px);
 }
 
@@ -156,7 +156,6 @@ body {
     background-color: #fef2f2;
 }
 
-/* Form Styling */
 .form-group {
     margin-bottom: 20px;
 }

@@ -17,39 +17,32 @@ class Model extends \Kotchasan\Model
         }
     }
 
-    public static function getTicketById($id)
+    public static function addTicket($save)
     {
         try {
             $model = new static;
-            return $model->db()->createQuery()
-                ->select('*')
-                ->from('tickets')
-                ->where(array('id', (int)$id))
-                ->first();
+            $db = $model->db();
+            $db->query("CREATE TABLE IF NOT EXISTS tickets (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                detail TEXT,
+                status TEXT DEFAULT 'pending'
+            )");
+            return $db->insert(static::getTableName('tickets'), $save);
         } catch (\Throwable $e) {
-            return null;
+            return false;
         }
-    }
-
-    public static function addTicket($save)
-    {
-        return static::db()->insert(static::getTableName('tickets'), $save);
-    }
-
-    public static function updateTicket($id, $save)
-    {
-        return static::db()->update(
-            static::getTableName('tickets'),
-            array('id', (int)$id),
-            $save
-        );
     }
 
     public static function deleteTicket($id)
     {
-        return static::db()->delete(
-            static::getTableName('tickets'),
-            array('id', (int)$id)
-        );
+        try {
+            return static::db()->delete(
+                static::getTableName('tickets'),
+                array('id', (int)$id)
+            );
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 }
