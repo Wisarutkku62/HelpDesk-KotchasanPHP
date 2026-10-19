@@ -40,7 +40,6 @@ class RegisterView
                         <select name="role" class="form-control">
                             <option value="user">User (ผู้ใช้งานทั่วไป/ผู้แจ้งซ่อม)</option>
                             <option value="staff">Staff (ช่างไอที Support)</option>
-                            <option value="admin">Admin (ผู้ดูแลระบบ)</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;">ยืนยันการสมัคร</button>

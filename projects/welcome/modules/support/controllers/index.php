@@ -66,6 +66,10 @@ class Controller extends \Kotchasan\Controller
             $password = $request->post('password')->topic();
             $role = $request->post('role')->topic();
 
+            if (!in_array($role, ['user', 'staff'])) {
+                $role = 'user';
+            }
+
             if (!empty($username) && !empty($password) && !empty($name)) {
                 $success = \Support\Index\Model::register($username, $password, $name, $role);
                 if ($success) {
@@ -147,7 +151,6 @@ class Controller extends \Kotchasan\Controller
             exit;
         }
 
-        //Dashboard main
         $summary = \Support\Index\Model::getSummary($loginUser['id'], $loginUser['role']);
         $tickets = \Support\Index\Model::getTickets($search, $selectedStatus, $loginUser['id'], $loginUser['role']);
         $view = new \Support\Index\View();
