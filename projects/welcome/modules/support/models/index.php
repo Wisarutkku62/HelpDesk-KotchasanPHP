@@ -26,6 +26,10 @@ class Model
             $pdo->exec("ALTER TABLE tickets ADD COLUMN user_id INTEGER DEFAULT 0");
         } catch (\Throwable $e) {}
 
+        try {
+            $pdo->exec("ALTER TABLE tickets ADD COLUMN image TEXT");
+        } catch (\Throwable $e) {}
+
         $pdo->exec("CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
@@ -42,7 +46,7 @@ class Model
             $pdo->prepare("INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?)")
                 ->execute(['staff', password_hash('staff1234', PASSWORD_DEFAULT), 'ช่างไอที (Staff)', 'staff']);
             $pdo->prepare("INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?)")
-                ->execute(['user', password_hash('user1234', PASSWORD_DEFAULT), 'สมชาย พนักงาน', 'user']);
+                ->execute(['user', password_hash('user1234', PASSWORD_DEFAULT), 'สมหมาย นะจ๊ะ', 'user']);
         }
         return $pdo;
     }
@@ -54,9 +58,11 @@ class Model
             $pdo = self::connectDB();
             $stmt = $pdo->prepare("INSERT INTO tickets (title, detail, status, created_at) VALUES (:title, :detail, :status, :created_at)");
             return $stmt->execute([
+                ':user_id'    => $userId,
                 ':title'      => $save['title'],
                 ':detail'     => $save['detail'] ?? '',
                 ':status'     => $save['status'] ?? 'pending',
+                ':image'      => $save['image'] ?? '',
                 ':created_at' => date('Y-m-d H:i:s')
             ]);
         } catch (\Throwable $e) {
