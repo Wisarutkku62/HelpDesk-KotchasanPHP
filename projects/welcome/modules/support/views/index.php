@@ -24,7 +24,10 @@ class View
                             <?php echo strtoupper($loginUser['role'] ?? 'user'); ?>
                         </span>
                     </div>
+                    <div class="user-actions">
+                    <a href="index.php?module=support&action=profile" class="btn-edit-profile">แก้ไขโปรไฟล์</a>
                     <a href="index.php?module=support&action=logout" class="btn-logout" onclick="return confirm('ยืนยันออกจากระบบ?')">ออกจากระบบ</a>
+                    </div>
                 </div>
 
                 <div class="support-header">

@@ -592,3 +592,36 @@
     .ticket-link:hover {
         text-decoration: underline;
     }
+
+    .user-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-edit-profile {
+        color: #4f46e5;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        padding: 6px 12px;
+        border-radius: 6px;
+        background: #eef2ff;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .btn-edit-profile:hover {
+        background: #e0e7ff;
+        color: #3730a3;
+    }
+
+    .alert-success {
+        background: #f0fdf4;
+        color: #16a34a;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        margin-bottom: 16px;
+        border: 1px solid #bbf7d0;
+    }

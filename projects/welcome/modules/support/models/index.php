@@ -222,4 +222,49 @@ class Model
             return false;
         }
     }
+    
+    public static function getUsers()
+    {
+        try {
+            $pdo = self::connectDB();
+            $stmt = $pdo->query("SELECT id, username, name, role, created_at FROM users ORDER BY id ASC");
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
+    public static function updateUserRole($userId, $role)
+    {
+        try {
+            $pdo = self::connectDB();
+            $stmt = $pdo->prepare("UPDATE users SET role = :role WHERE id = :id");
+            return $stmt->execute([':role' => $role, ':id' => (int)$userId]);
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    public static function resetUserPassword($userId, $newPassword)
+    {
+        try {
+            $pdo = self::connectDB();
+            $hashed = password_hash($newPassword, PASSWORD_DEFAULT);
+            $stmt = $pdo->prepare("UPDATE users SET password = :password WHERE id = :id");
+            return $stmt->execute([':password' => $hashed, ':id' => (int)$userId]);
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    public static function deleteUser($userId)
+    {
+        try {
+            $pdo = self::connectDB();
+            $stmt = $pdo->prepare("DELETE FROM users WHERE id = :id");
+            return $stmt->execute([':id' => (int)$userId]);
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
 }
