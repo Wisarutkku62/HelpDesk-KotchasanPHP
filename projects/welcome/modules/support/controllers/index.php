@@ -169,6 +169,24 @@ class Controller extends \Kotchasan\Controller
             header('Location: ' . $redirectUrl);
             exit;
         }
+        
+        if ($action === 'view') {
+            $id = (int)$request->get('id')->toInt();
+            $ticket = \Support\Index\Model::getTicketById($id);
+
+            if (!$ticket) {
+                header('Location: index.php?module=support');
+                exit;
+            }
+
+            if ($loginUser['role'] === 'user' && $ticket['user_id'] != $loginUser['id']) {
+                header('Location: index.php?module=support');
+                exit;
+            }
+
+            $view = new \Support\Index\DetailView();
+            return $view->render($request, $ticket, $loginUser);
+        }
 
         $summary = \Support\Index\Model::getSummary($loginUser['id'], $loginUser['role']);
         $tickets = \Support\Index\Model::getTickets($search, $selectedStatus, $loginUser['id'], $loginUser['role']);
