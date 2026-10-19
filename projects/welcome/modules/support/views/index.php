@@ -51,7 +51,6 @@ class View
                     </div>
                 </div>
 
-                <!-- ฟอร์มค้นหาและกรองสถานะ -->
                 <form method="get" action="index.php" class="filter-bar">
                     <input type="hidden" name="module" value="support">
                     <input type="text" name="search" class="filter-input" placeholder="ค้นหาหัวข้อหรือรายละเอียด" value="<?php echo htmlspecialchars($search); ?>">
@@ -63,11 +62,12 @@ class View
                         <option value="completed" <?php echo ($selectedStatus === 'completed') ? 'selected="selected"' : ''; ?>>เสร็จสิ้น</option>
                     </select>
 
-                    <button type="submit" class="btn btn-primary" style="padding: 8px 16px;">ค้นหา</button>
+                    <button type="submit" class="btn btn-primary btn-search">ค้นหา</button>
                     <?php if (!empty($search) || !empty($selectedStatus)): ?>
-                        <a href="index.php?module=support" class="btn" style="background: #e2e8f0; color: #475569;">ล้างการค้นหา</a>
+                        <a href="index.php?module=support" class="btn btn-reset">ล้างการค้นหา</a>
                     <?php endif; ?>
                 </form>
+
                 <table class="support-table">
                     <thead>
                         <tr>
@@ -87,18 +87,36 @@ class View
                                 <tr>
                                     <td><strong>#<?php echo $row['id']; ?></strong></td>
                                     <td>
-                                        <?php if (!empty($row['image']) && file_exists(ROOT_PATH . 'datas/uploads/' . $row['image'])): ?>
-                                            <a href="datas/uploads/<?php echo $row['image']; ?>" target="_blank">
-                                                <img src="datas/uploads/<?php echo $row['image']; ?>" class="ticket-thumb">
+                                        <?php 
+                                            $imgRelPath = 'datas/uploads/' . $row['image'];
+                                            $projImgRelPath = 'projects/welcome/datas/uploads/' . $row['image'];
+                                            $hasImg = false;
+                                            $imgUrl = '';
+
+                                            if (!empty($row['image'])) {
+                                                if (file_exists(ROOT_PATH . $projImgRelPath)) {
+                                                    $hasImg = true;
+                                                    $baseUrl = defined('WEB_URL') ? WEB_URL : '';
+                                                    $imgUrl = $baseUrl . $projImgRelPath;
+                                                } elseif (file_exists(ROOT_PATH . $imgRelPath)) {
+                                                    $hasImg = true;
+                                                    $baseUrl = defined('WEB_URL') ? WEB_URL : '';
+                                                    $imgUrl = $baseUrl . $imgRelPath;
+                                                }
+                                            }
+                                        ?>
+                                        <?php if ($hasImg): ?>
+                                            <a href="<?php echo $imgUrl; ?>" target="_blank">
+                                                <img src="<?php echo $imgUrl; ?>" class="ticket-thumb" alt="อุปกรณ์ชำรุด">
                                             </a>
                                         <?php else: ?>
-                                            <span style="color: #cbd5e1; font-size: 0.75rem;">ไม่มีรูป</span>
+                                            <span class="no-image-text">ไม่มีรูป</span>
                                         <?php endif; ?>
                                     </td>
                                     <td><strong><?php echo htmlspecialchars($row['title']); ?></strong></td>
                                     <td class="text-muted"><?php echo htmlspecialchars($row['detail']); ?></td>
-                                    <td><span style="font-weight: 500; color: #334155;"><?php echo htmlspecialchars($row['user_name'] ?? 'ทั่วไป'); ?></span></td>
-                                    <td style="font-size: 0.85rem;" class="text-muted">
+                                    <td><span class="user-name-text"><?php echo htmlspecialchars($row['user_name'] ?? 'ทั่วไป'); ?></span></td>
+                                    <td class="ticket-date text-muted">
                                         <?php echo !empty($row['created_at']) ? self::formatThaiDate($row['created_at']) : '-'; ?>
                                     </td>
                                     <td>
@@ -111,7 +129,7 @@ class View
                                             ?>
                                         </span>
                                     </td>
-                                    <td style="text-align: center;">
+                                    <td class="text-center">
                                         <?php 
                                             $filterParams = '';
                                             if (!empty($search)) { $filterParams .= '&search=' . urlencode($search); }
@@ -135,7 +153,7 @@ class View
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="8" class="text-center text-muted" style="padding: 40px 0;">
+                                <td colspan="8" class="text-center text-muted empty-state">
                                     ไม่พบรายการแจ้งซ่อมที่ตรงกับเงื่อนไข
                                 </td>
                             </tr>

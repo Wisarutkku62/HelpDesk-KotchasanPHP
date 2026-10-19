@@ -52,21 +52,21 @@ class Model
     }
 
 
-    public static function addTicket($save)
+    public static function addTicket($save, $userId = 0)
     {
         try {
             $pdo = self::connectDB();
-            $stmt = $pdo->prepare("INSERT INTO tickets (title, detail, status, created_at) VALUES (:title, :detail, :status, :created_at)");
+            $stmt = $pdo->prepare("INSERT INTO tickets (user_id, title, detail, image, status, created_at) VALUES (:user_id, :title, :detail, :image, :status, :created_at)");
             return $stmt->execute([
                 ':user_id'    => $userId,
                 ':title'      => $save['title'],
                 ':detail'     => $save['detail'] ?? '',
-                ':status'     => $save['status'] ?? 'pending',
                 ':image'      => $save['image'] ?? '',
+                ':status'     => $save['status'] ?? 'pending',
                 ':created_at' => date('Y-m-d H:i:s')
             ]);
         } catch (\Throwable $e) {
-            return false;
+            return False;
         }
     }
 

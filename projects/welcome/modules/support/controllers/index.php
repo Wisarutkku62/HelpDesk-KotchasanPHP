@@ -109,7 +109,8 @@ class Controller extends \Kotchasan\Controller
             return;
         }
 
-        if ($action === 'save' && $request->isPost()) {
+       if ($action === 'save' && $request->isPost()) {
+            $imageName = '';
             if (!empty($_FILES['image']['name']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
                 $uploadDir = ROOT_PATH . 'datas/uploads/';
                 if (!is_dir($uploadDir)) {
@@ -126,9 +127,11 @@ class Controller extends \Kotchasan\Controller
                     move_uploaded_file($fileTmp, $uploadDir . $imageName);
                 }
             }
+
             $save = [
                 'title'  => $request->post('title')->topic(),
                 'detail' => $request->post('detail')->topic(),
+                'image'  => $imageName,
                 'status' => 'pending'
             ];
 
