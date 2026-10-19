@@ -199,4 +199,27 @@ class Model
             return null;
         }
     }
+    public static function updateProfile($userId, $name, $password = '')
+    {
+        try {
+            $pdo = self::connectDB();
+            if (!empty($password)) {
+                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                $stmt = $pdo->prepare("UPDATE users SET name = :name, password = :password WHERE id = :id");
+                return $stmt->execute([
+                    ':name' => $name,
+                    ':password' => $hashedPassword,
+                    ':id' => $userId
+                ]);
+            } else {
+                $stmt = $pdo->prepare("UPDATE users SET name = :name WHERE id = :id");
+                return $stmt->execute([
+                    ':name' => $name,
+                    ':id' => $userId
+                ]);
+            }
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
 }
