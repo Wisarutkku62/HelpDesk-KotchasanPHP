@@ -88,31 +88,41 @@ class Model
     {
         try {
             $pdo = self::connectDB();
-            $stmt = $pdo->prepare("DELETE FROM tickets WHERE id = :id");
-            return $stmt->execute([':id' => (int)$id]);
+            if ($role === 'admin') {
+                $stmt = $pdo->prepare("DELETE FROM tickets WHERE id = :id");
+                return $stmt->execute([':id' => (int)$id]);
+            } else {
+                $stmt = $pdo->prepare("DELETE FROM tickets WHERE id = :id AND user_id = :user_id AND status = 'pending'");
+                return $stmt->execute([':id' => (int)$id, ':user_id' => $userId]);
+            }
         } catch (\Throwable $e) {
             return false;
         }
     }
 
-    public static function getTickets($search = '', $status = '')
+    public static function getTickets($search = '', $status = '', $userId = 0, $role = 'admin')
     {
         try {
             $pdo = self::connectDB();
-            $sql = "SELECT * FROM tickets WHERE 1=1";
+            $sql = "SELECT t.*, u.name as user_name FROM tickets t LEFT JOIN users u ON t.user_id = u.id WHERE 1=1";
             $params = [];
 
+            if ($role === 'user') {
+                $sql .= " AND t.user_id = :user_id";
+                $params[':user_id'] = $userId;
+            }
+
             if (!empty($search)) {
-                $sql .= " AND (title LIKE :search OR detail LIKE :search)";
+                $sql .= " AND (t.title LIKE :search OR t.detail LIKE :search)";
                 $params[':search'] = '%' . $search . '%';
             }
 
             if (!empty($status)) {
-                $sql .= " AND status = :status";
+                $sql .= " AND t.status = :status";
                 $params[':status'] = $status;
             }
 
-            $sql .= " ORDER BY id DESC";
+            $sql .= " ORDER BY t.id DESC";
 
             $stmt = $pdo->prepare($sql);
             $stmt->execute($params);
@@ -121,16 +131,18 @@ class Model
             return [];
         }
     }
+
      public static function getSummary()
     {
         try {
             $pdo = self::connectDB();
+            $where = ($role === 'user') ? " WHERE user_id = " . (int)$userId : "";
             $stmt = $pdo->query("SELECT 
                 COUNT(*) as total,
                 SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
                 SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress,
                 SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed
-                FROM tickets");
+                FROM tickets {$where}");
             return $stmt->fetch() ?: ['total' => 0, 'pending' => 0, 'in_progress' => 0, 'completed' => 0];
         } catch (\Throwable $e) {
             return ['total' => 0, 'pending' => 0, 'in_progress' => 0, 'completed' => 0];
