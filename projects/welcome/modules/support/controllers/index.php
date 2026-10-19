@@ -7,59 +7,27 @@ class Controller extends \Kotchasan\Controller
 {
     public function index(Request $request)
     {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         $action = $_GET['action'] ?? $_POST['action'] ?? $request->request('action')->topic();
-        $search = $request->get('search')->topic();
-        $selectedStatus = $request->get('status')->topic();
-        $queryParams = [];
-        if (!empty($search)) { $queryParams[] = 'search=' . urlencode($search); }
-        if (!empty($selectedStatus)) { $queryParams[] = 'status=' . urlencode($selectedStatus); }
-        $redirectUrl = 'index.php?module=support' . (!empty($queryParams) ? '&' . implode('&', $queryParams) : '');
 
-        if ($action === 'add') {
-            require_once ROOT_PATH . 'projects/welcome/modules/support/views/add.php';
-            $view = new \Support\Index\AddView();
-            echo $view->render($request);
-            return;
-        }
-
-        if ($action === 'save' && $request->isPost()) {
-            $save = [
-                'title'  => $request->post('title')->topic(),
-                'detail' => $request->post('detail')->topic(),
-                'status' => 'pending'
-            ];
-
-            if (!empty($save['title'])) {
-                \Support\Index\Model::addTicket($save);
+        if ($action === 'logout') {
+            unset($_SESSION['login_user']);
+            if (ini_get("session.use_cookies")) {
+                $params = session_get_cookie_params();
+                setcookie(session_name(), '', time() - 42000,
+                    $params["path"], $params["domain"],
+                    $params["secure"], $params["httponly"]
+                );
             }
+            session_destroy();
 
             if (ob_get_length()) { ob_clean(); }
-            header('Location: index.php?module=support');
+            header('Location: index.php?module=support&action=login');
             exit;
         }
-
-        if ($action === 'status') {
-            $id = $request->request('id')->toInt();
-            $status = $request->request('status')->topic();
-
-            if ($id > 0 && in_array($status, ['pending', 'in_progress', 'completed'])) {
-                \Support\Index\Model::updateStatus($id, $status);
-            }
-
-            if (ob_get_length()) { ob_clean(); }
-            header('Location: ' . $redirectUrl);
-            exit;
-        }
-
-        if ($action === 'delete') {
-            $id = $request->request('id')->toInt();
-            if ($id > 0) {
-                \Support\Index\Model::deleteTicket($id);
-            }
-
-            if (ob_get_length()) { ob_clean(); }
-            header('Location: ' . $redirectUrl);
-            exit;
 
         if ($action === 'login') {
             require_once ROOT_PATH . 'projects/welcome/modules/support/views/login.php';
@@ -71,10 +39,10 @@ class Controller extends \Kotchasan\Controller
         if ($action === 'do_login' && $request->isPost()) {
             $username = $request->post('username')->topic();
             $password = $request->post('password')->topic();
-
             $user = \Support\Index\Model::login($username, $password);
             if ($user) {
                 $_SESSION['login_user'] = $user;
+                if (ob_get_length()) { ob_clean(); }
                 header('Location: index.php?module=support');
                 exit;
             } else {
@@ -101,6 +69,7 @@ class Controller extends \Kotchasan\Controller
             if (!empty($username) && !empty($password) && !empty($name)) {
                 $success = \Support\Index\Model::register($username, $password, $name, $role);
                 if ($success) {
+                    if (ob_get_length()) { ob_clean(); }
                     header('Location: index.php?module=support&action=login');
                     exit;
                 }
@@ -112,33 +81,73 @@ class Controller extends \Kotchasan\Controller
             return;
         }
 
-        if ($action === 'logout') {
-            unset($_SESSION['login_user']);
-            session_destroy();
-            header('Location: index.php?module=support&action=login');
-            exit;
-        }
-        if (ini_get("session.use_cookies")) {
-        $params = session_get_cookie_params();
-        setcookie(session_name(), '', time() - 42000,
-            $params["path"], $params["domain"],
-            $params["secure"], $params["httponly"]
-        );
-    }
-        session_destroy();
-        if (ob_get_length()) { ob_clean(); }
-        header('Location: index.php?module=support&action=login');
-    exit;
-        
+        //Auth Guard
         if (empty($_SESSION['login_user'])) {
+            if (ob_get_length()) { ob_clean(); }
             header('Location: index.php?module=support&action=login');
             exit;
         }
-        $loginUser = $_SESSION['login_user'];
-        $search = $request->get('search')->topic();
-        $selectedStatus = $request->get('status')->topic();
 
+        // User Login Only
+        $loginUser = $_SESSION['login_user'];
+        $search = $_GET['search'] ?? $request->get('search')->topic();
+        $selectedStatus = $_GET['status'] ?? $request->get('status')->topic();
+
+        $queryParams = [];
+        if (!empty($search)) { $queryParams[] = 'search=' . urlencode($search); }
+        if (!empty($selectedStatus)) { $queryParams[] = 'status=' . urlencode($selectedStatus); }
+        $redirectUrl = 'index.php?module=support' . (!empty($queryParams) ? '&' . implode('&', $queryParams) : '');
+
+        if ($action === 'add') {
+            require_once ROOT_PATH . 'projects/welcome/modules/support/views/add.php';
+            $view = new \Support\Index\AddView();
+            echo $view->render($request);
+            return;
         }
+
+        if ($action === 'save' && $request->isPost()) {
+            $save = [
+                'title'  => $request->post('title')->topic(),
+                'detail' => $request->post('detail')->topic(),
+                'status' => 'pending'
+            ];
+
+            if (!empty($save['title'])) {
+                \Support\Index\Model::addTicket($save, $loginUser['id']);
+            }
+
+            if (ob_get_length()) { ob_clean(); }
+            header('Location: index.php?module=support');
+            exit;
+        }
+
+        if ($action === 'status') {
+            if (in_array($loginUser['role'], ['staff', 'admin'])) {
+                $id = $request->request('id')->toInt();
+                $status = $request->request('status')->topic();
+
+                if ($id > 0 && in_array($status, ['pending', 'in_progress', 'completed'])) {
+                    \Support\Index\Model::updateStatus($id, $status);
+                }
+            }
+
+            if (ob_get_length()) { ob_clean(); }
+            header('Location: ' . $redirectUrl);
+            exit;
+        }
+
+        if ($action === 'delete') {
+            $id = $request->request('id')->toInt();
+            if ($id > 0) {
+                \Support\Index\Model::deleteTicket($id, $loginUser['id'], $loginUser['role']);
+            }
+
+            if (ob_get_length()) { ob_clean(); }
+            header('Location: ' . $redirectUrl);
+            exit;
+        }
+
+        //Dashboard main
         $summary = \Support\Index\Model::getSummary($loginUser['id'], $loginUser['role']);
         $tickets = \Support\Index\Model::getTickets($search, $selectedStatus, $loginUser['id'], $loginUser['role']);
         $view = new \Support\Index\View();
