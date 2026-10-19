@@ -7,7 +7,7 @@ class Controller extends \Kotchasan\Controller
 {
     public function index(Request $request)
     {
-        $action = $request->request('action')->topic();
+        $action = $_GET['action'] ?? $_POST['action'] ?? $request->request('action')->topic();
         $search = $request->get('search')->topic();
         $selectedStatus = $request->get('status')->topic();
         $queryParams = [];
@@ -118,6 +118,18 @@ class Controller extends \Kotchasan\Controller
             header('Location: index.php?module=support&action=login');
             exit;
         }
+        if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000,
+            $params["path"], $params["domain"],
+            $params["secure"], $params["httponly"]
+        );
+    }
+        session_destroy();
+        if (ob_get_length()) { ob_clean(); }
+        header('Location: index.php?module=support&action=login');
+    exit;
+        
         if (empty($_SESSION['login_user'])) {
             header('Location: index.php?module=support&action=login');
             exit;
@@ -127,9 +139,9 @@ class Controller extends \Kotchasan\Controller
         $selectedStatus = $request->get('status')->topic();
 
         }
-        $summary = \Support\Index\Model::getSummary();
-        $tickets = \Support\Index\Model::getTickets($search, $selectedStatus);
+        $summary = \Support\Index\Model::getSummary($loginUser['id'], $loginUser['role']);
+        $tickets = \Support\Index\Model::getTickets($search, $selectedStatus, $loginUser['id'], $loginUser['role']);
         $view = new \Support\Index\View();
-        echo $view->render($request, $tickets, $summary, $search, $selectedStatus);
+        echo $view->render($request, $tickets, $summary, $search, $selectedStatus, $loginUser);
     }
 }

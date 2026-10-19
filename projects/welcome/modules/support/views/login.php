@@ -16,7 +16,7 @@ class LoginView
         </head>
         <body style="background: #f8fafc;">
             <div class="auth-container">
-                <h1 class="auth-title">🔑 เข้าสู่ระบบ IT Support</h1>
+                <h1 class="auth-title">เข้าสู่ระบบ IT Support</h1>
 
                 <?php if (!empty($error)): ?>
                     <div class="alert-error"><?php echo htmlspecialchars($error); ?></div>
