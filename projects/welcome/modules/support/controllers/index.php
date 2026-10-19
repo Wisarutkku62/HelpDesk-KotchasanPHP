@@ -188,7 +188,7 @@ class Controller extends \Kotchasan\Controller
             echo $view->render($request, $ticket, $loginUser);
             return;
         }
-        
+
         if ($action === 'profile') {
             require_once ROOT_PATH . 'projects/welcome/modules/support/views/profile.php';
             $view = new \Support\Index\ProfileView();
@@ -234,6 +234,48 @@ class Controller extends \Kotchasan\Controller
                 echo $view->render($request, $loginUser, 'เกิดข้อผิดพลาดในการบันทึกข้อมูล', false);
                 return;
             }
+        }
+
+        //Admin
+       if ($action === 'manage_users') {
+            if ($loginUser['role'] !== 'admin') {
+                header('Location: index.php?module=support');
+                exit;
+            }
+
+            require_once ROOT_PATH . 'projects/welcome/modules/support/views/users.php';
+            $users = \Support\Index\Model::getUsers();
+            $view = new \Support\Index\UsersView();
+            echo $view->render($request, $users, $loginUser);
+            return;
+        }
+
+        if ($action === 'update_user_role' && $request->isPost()) {
+            if ($loginUser['role'] === 'admin') {
+                $targetUserId = $request->post('user_id')->toInt();
+                $newRole = $request->post('role')->topic();
+
+                if ($targetUserId !== $loginUser['id'] && in_array($newRole, ['user', 'staff', 'admin'])) {
+                    \Support\Index\Model::updateUserRole($targetUserId, $newRole);
+                }
+            }
+
+            if (ob_get_length()) { ob_clean(); }
+            header('Location: index.php?module=support&action=manage_users');
+            exit;
+        }
+
+        if ($action === 'delete_user') {
+            if ($loginUser['role'] === 'admin') {
+                $targetUserId = $request->get('id')->toInt();
+                if ($targetUserId > 0 && $targetUserId !== $loginUser['id']) {
+                    \Support\Index\Model::deleteUser($targetUserId);
+                }
+            }
+
+            if (ob_get_length()) { ob_clean(); }
+            header('Location: index.php?module=support&action=manage_users');
+            exit;
         }
 
         $summary = \Support\Index\Model::getSummary($loginUser['id'], $loginUser['role']);

@@ -625,3 +625,19 @@
         margin-bottom: 16px;
         border: 1px solid #bbf7d0;
     }
+    .btn-manage-users {
+    color: #0284c7;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: #e0f2fe;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-manage-users:hover {
+    background: #bae6fd;
+    color: #0369a1;
+}

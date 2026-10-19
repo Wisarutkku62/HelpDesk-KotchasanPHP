@@ -25,6 +25,9 @@ class View
                         </span>
                     </div>
                     <div class="user-actions">
+                    <?php if (($loginUser['role'] ?? '') === 'admin'): ?>
+                         <a href="index.php?module=support&action=manage_users" class="btn-manage-users">จัดการผู้ใช้งาน</a>
+                     <?php endif; ?>
                     <a href="index.php?module=support&action=profile" class="btn-edit-profile">แก้ไขโปรไฟล์</a>
                     <a href="index.php?module=support&action=logout" class="btn-logout" onclick="return confirm('ยืนยันออกจากระบบ?')">ออกจากระบบ</a>
                     </div>
