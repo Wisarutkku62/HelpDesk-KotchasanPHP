@@ -238,12 +238,19 @@ class Controller extends \Kotchasan\Controller
 
         //Admin
        if ($action === 'manage_users') {
-            if ($loginUser['role'] !== 'admin') {
+            if (($loginUser['role'] ?? '') !== 'admin') {
+                if (ob_get_length()) { ob_clean(); }
                 header('Location: index.php?module=support');
                 exit;
             }
 
-            require_once ROOT_PATH . 'projects/welcome/modules/support/views/users.php';
+            $viewFile = ROOT_PATH . 'projects/welcome/modules/support/views/manage_users.php';
+            if (file_exists($viewFile)) {
+                require_once $viewFile;
+            } else {
+                die('ไม่พบไฟล์ views/users.php กรุณาตรวจสอบการสร้างไฟล์');
+            }
+
             $users = \Support\Index\Model::getUsers();
             $view = new \Support\Index\UsersView();
             echo $view->render($request, $users, $loginUser);
@@ -251,7 +258,7 @@ class Controller extends \Kotchasan\Controller
         }
 
         if ($action === 'update_user_role' && $request->isPost()) {
-            if ($loginUser['role'] === 'admin') {
+            if (($loginUser['role'] ?? '') === 'admin') {
                 $targetUserId = $request->post('user_id')->toInt();
                 $newRole = $request->post('role')->topic();
 
@@ -265,8 +272,34 @@ class Controller extends \Kotchasan\Controller
             exit;
         }
 
+        if ($action === 'reset_user_password' && $request->isPost()) {
+            $msg = '';
+            $isSuccess = false;
+
+            if (($loginUser['role'] ?? '') === 'admin') {
+                $targetUserId = $request->post('user_id')->toInt();
+                $newPassword = $request->post('new_password')->topic();
+
+                if (!empty($newPassword) && mb_strlen($newPassword) >= 4) {
+                    \Support\Index\Model::resetUserPassword($targetUserId, $newPassword);
+                    $msg = 'รีเซ็ตรหัสผ่านเรียบร้อยแล้ว';
+                    $isSuccess = true;
+                } else {
+                    $msg = 'รหัสผ่านต้องมีความยาวอย่างน้อย 4 ตัวอักษร';
+                }
+            }
+
+            $viewFile = ROOT_PATH . 'projects/welcome/modules/support/views/manage_users.php';
+            if (file_exists($viewFile)) { require_once $viewFile; }
+            
+            $users = \Support\Index\Model::getUsers();
+            $view = new \Support\Index\UsersView();
+            echo $view->render($request, $users, $loginUser, $msg, $isSuccess);
+            return;
+        }
+
         if ($action === 'delete_user') {
-            if ($loginUser['role'] === 'admin') {
+            if (($loginUser['role'] ?? '') === 'admin') {
                 $targetUserId = $request->get('id')->toInt();
                 if ($targetUserId > 0 && $targetUserId !== $loginUser['id']) {
                     \Support\Index\Model::deleteUser($targetUserId);

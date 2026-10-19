@@ -222,8 +222,8 @@ class Model
             return false;
         }
     }
-    
-    public static function getUsers()
+
+   public static function getUsers()
     {
         try {
             $pdo = self::connectDB();
