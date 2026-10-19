@@ -86,7 +86,6 @@ class View
                             <?php foreach ($tickets as $row): ?>
                                 <tr>
                                     <td>
-                                        <a href="index.php?module=support&action=view&id=<?php echo $row['id']; ?>" class="ticket-link">
                                             <strong>#<?php echo $row['id']; ?></strong>
                                         </a>
                                     </td>

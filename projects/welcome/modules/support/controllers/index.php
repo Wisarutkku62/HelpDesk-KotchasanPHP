@@ -169,7 +169,7 @@ class Controller extends \Kotchasan\Controller
             header('Location: ' . $redirectUrl);
             exit;
         }
-        
+
         if ($action === 'view') {
             $id = (int)$request->get('id')->toInt();
             $ticket = \Support\Index\Model::getTicketById($id);
@@ -183,9 +183,10 @@ class Controller extends \Kotchasan\Controller
                 header('Location: index.php?module=support');
                 exit;
             }
-
+            require_once ROOT_PATH . 'projects/welcome/modules/support/views/detail.php';
             $view = new \Support\Index\DetailView();
-            return $view->render($request, $ticket, $loginUser);
+            echo $view->render($request, $ticket, $loginUser);
+            return;
         }
 
         $summary = \Support\Index\Model::getSummary($loginUser['id'], $loginUser['role']);

@@ -71,7 +71,7 @@ class DetailView
 
                 <?php if ($hasImg): ?>
                     <div class="detail-section">
-                        <h3 class="section-subtitle">📷 รูปภาพประกอบ</h3>
+                        <h3 class="section-subtitle">รูปภาพประกอบ</h3>
                         <div class="detail-image-wrapper">
                             <a href="<?php echo $imgUrl; ?>" target="_blank">
                                 <img src="<?php echo $imgUrl; ?>" class="detail-full-image" alt="รูปภาพอุปกรณ์ชำรุด">
@@ -81,7 +81,7 @@ class DetailView
                 <?php endif; ?>
 
                 <div class="detail-actions">
-                    <a href="index.php?module=support" class="btn btn-secondary">← กลับหน้าหลัก</a>
+                    <a href="index.php?module=support" class="btn btn-secondary">กลับหน้าหลัก</a>
 
                     <?php $userRole = $loginUser['role'] ?? 'user'; ?>
                     <?php if (in_array($userRole, ['staff', 'admin'])): ?>
