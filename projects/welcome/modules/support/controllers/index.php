@@ -110,6 +110,22 @@ class Controller extends \Kotchasan\Controller
         }
 
         if ($action === 'save' && $request->isPost()) {
+            if (!empty($_FILES['image']['name']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = ROOT_PATH . 'datas/uploads/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+
+                $fileTmp   = $_FILES['image']['tmp_name'];
+                $fileName  = $_FILES['image']['name'];
+                $fileExt   = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                $allowed   = ['jpg', 'jpeg', 'png', 'webp'];
+
+                if (in_array($fileExt, $allowed)) {
+                    $imageName = 'ticket_' . time() . '_' . uniqid() . '.' . $fileExt;
+                    move_uploaded_file($fileTmp, $uploadDir . $imageName);
+                }
+            }
             $save = [
                 'title'  => $request->post('title')->topic(),
                 'detail' => $request->post('detail')->topic(),
