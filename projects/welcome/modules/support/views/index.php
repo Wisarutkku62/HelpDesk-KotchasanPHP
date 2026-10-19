@@ -85,7 +85,11 @@ class View
                         <?php if (!empty($tickets)): ?>
                             <?php foreach ($tickets as $row): ?>
                                 <tr>
-                                    <td><strong>#<?php echo $row['id']; ?></strong></td>
+                                    <td>
+                                        <a href="index.php?module=support&action=view&id=<?php echo $row['id']; ?>" class="ticket-link">
+                                            <strong>#<?php echo $row['id']; ?></strong>
+                                        </a>
+                                    </td>
                                     <td>
                                         <?php 
                                             $imgRelPath = 'datas/uploads/' . $row['image'];
@@ -113,7 +117,11 @@ class View
                                             <span class="no-image-text">ไม่มีรูป</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td><strong><?php echo htmlspecialchars($row['title']); ?></strong></td>
+                                    <td>
+                                        <a href="index.php?module=support&action=view&id=<?php echo $row['id']; ?>" class="ticket-link">
+                                            <strong><?php echo htmlspecialchars($row['title']); ?></strong>
+                                        </a>
+                                    </td>
                                     <td class="text-muted"><?php echo htmlspecialchars($row['detail']); ?></td>
                                     <td><span class="user-name-text"><?php echo htmlspecialchars($row['user_name'] ?? 'ทั่วไป'); ?></span></td>
                                     <td class="ticket-date text-muted">

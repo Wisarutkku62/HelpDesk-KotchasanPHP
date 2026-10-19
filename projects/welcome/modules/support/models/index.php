@@ -182,4 +182,21 @@ class Model
             return false;
         }
     }
+    public static function getTicketById($id)
+    {
+        try {
+            $pdo = self::connectDB();
+            $stmt = $pdo->prepare("
+                SELECT t.*, u.name AS user_name, u.role AS user_role
+                FROM tickets t
+                LEFT JOIN users u ON t.user_id = u.id
+                WHERE t.id = :id
+                LIMIT 1
+            ");
+            $stmt->execute([':id' => (int)$id]);
+            return $stmt->fetch(\PDO::FETCH_ASSOC);
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
 }
