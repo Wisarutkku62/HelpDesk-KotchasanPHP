@@ -49,8 +49,29 @@ class Model
                 ->execute(['user', password_hash('user1234', PASSWORD_DEFAULT), 'สมหมาย นะจ๊ะ', 'user']);
         }
         return $pdo;
-    }
 
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS categories (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS departments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL
+            );
+        ");
+
+        try {
+            $pdo->exec("ALTER TABLE tickets ADD COLUMN category_id INTEGER DEFAULT NULL;");
+            $pdo->exec("INSERT INTO categories (name) VALUES 
+                ('อุปกรณ์ฮาร์ดแวร์'),
+                ('โปรแกรม/ซอฟต์แวร์'),
+                ('ระบบเครือข่าย/อินเทอร์เน็ต'),
+                ('เครื่องพิมพ์/สแกนเนอร์');");
+        } catch (\Throwable $e) {
+
+        }
+    }
 
     public static function addTicket($save, $userId = 0)
     {
@@ -267,4 +288,27 @@ class Model
             return false;
         }
     }
+    
+    public static function getCategories()
+    {
+        try {
+            $pdo = self::connectDB();
+            $stmt = $pdo->query("SELECT * FROM categories ORDER BY id ASC");
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
+    public static function getDepartments()
+    {
+        try {
+            $pdo = self::connectDB();
+            $stmt = $pdo->query("SELECT * FROM departments ORDER BY id ASC");
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+    
 }
