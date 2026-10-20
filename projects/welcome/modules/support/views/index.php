@@ -17,7 +17,6 @@ class View
         </head>
         <body>
             <div class="support-container">
-                <!-- แถบข้อมูลผู้ใช้งาน -->
                 <div class="user-bar">
                     <div class="user-info">
                         <span>สวัสดีคุณ <strong><?php echo htmlspecialchars($loginUser['name'] ?? 'ผู้ใช้งาน'); ?></strong></span>
@@ -34,13 +33,11 @@ class View
                     </div>
                 </div>
 
-                <!-- ส่วนหัวระบบ -->
                 <div class="support-header">
                     <h1 class="support-title">ระบบแจ้งซ่อม IT Support</h1>
                     <a href="index.php?module=support&action=add" class="btn btn-primary">+ แจ้งซ่อมใหม่</a>
                 </div>
                 
-                <!-- การ์ดสรุปสถิติตั๋วซ่อม -->
                 <div class="stats-grid">
                     <div class="stat-card">
                         <span class="stat-title">ทั้งหมด</span>
@@ -60,20 +57,19 @@ class View
                     </div>
                 </div>
 
-                <!-- แถบค้นหาและตัวกรอง -->
                 <form method="get" action="index.php" class="filter-bar">
                     <input type="hidden" name="module" value="support">
                     <input type="text" name="search" class="filter-input" placeholder="ค้นหาหัวข้อ, รายละเอียด หรือรหัสทรัพย์สิน..." value="<?php echo htmlspecialchars($search); ?>">
 
                     <select name="status" class="filter-select" onchange="this.form.submit()">
-                        <option value="" <?php echo empty($selectedStatus) ? 'selected="selected"' : ''; ?>>-- ทุกสถานะ --</option>
+                        <option value="" <?php echo empty($selectedStatus) ? 'selected="selected"' : ''; ?>>ทุกสถานะ</option>
                         <option value="pending" <?php echo ($selectedStatus === 'pending') ? 'selected="selected"' : ''; ?>>รอดำเนินการ</option>
                         <option value="in_progress" <?php echo ($selectedStatus === 'in_progress') ? 'selected="selected"' : ''; ?>>กำลังดำเนินการ</option>
                         <option value="completed" <?php echo ($selectedStatus === 'completed') ? 'selected="selected"' : ''; ?>>เสร็จสิ้น</option>
                     </select>
 
                     <select name="category_id" class="filter-select" onchange="this.form.submit()">
-                        <option value="0">-- ทุกหมวดหมู่ --</option>
+                        <option value="0">ทุกหมวดหมู่</option>
                         <?php if (!empty($categories)): ?>
                             <?php foreach ($categories as $cat): ?>
                                 <option value="<?php echo $cat['id']; ?>" <?php echo $selectedCategory == $cat['id'] ? 'selected="selected"' : ''; ?>>

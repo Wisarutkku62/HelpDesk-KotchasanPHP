@@ -30,7 +30,7 @@ class AddView
                     <div class="form-group">
                         <label class="form-label">หมวดหมู่ปัญหา <span class="required-asterisk">*</span></label>
                         <select name="category_id" class="form-control" required>
-                            <option value="">-- กรุณาเลือกหมวดหมู่ปัญหา --</option>
+                            <option value="">กรุณาเลือกหมวดหมู่ปัญหา</option>
                             <?php if (!empty($categories)): ?>
                                 <?php foreach ($categories as $cat): ?>
                                     <option value="<?php echo $cat['id']; ?>"><?php echo htmlspecialchars($cat['name']); ?></option>
@@ -42,7 +42,7 @@ class AddView
                     <div class="form-group">
                         <label class="form-label">อุปกรณ์ / ทรัพย์สินชำรุด (ถ้ามี)</label>
                         <select name="asset_id" class="form-control">
-                            <option value="">-- ไม่ระบุ / อุปกรณ์ทั่วไป --</option>
+                            <option value="">ไม่ระบุ / อุปกรณ์ทั่วไป</option>
                             <?php if (!empty($assets)): ?>
                                 <?php foreach ($assets as $ast): ?>
                                     <option value="<?php echo $ast['id']; ?>">
