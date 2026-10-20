@@ -17,6 +17,7 @@ class View
         </head>
         <body>
             <div class="support-container">
+                <!-- แถบข้อมูลผู้ใช้งาน -->
                 <div class="user-bar">
                     <div class="user-info">
                         <span>สวัสดีคุณ <strong><?php echo htmlspecialchars($loginUser['name'] ?? 'ผู้ใช้งาน'); ?></strong></span>
@@ -25,19 +26,21 @@ class View
                         </span>
                     </div>
                     <div class="user-actions">
-                    <?php if (($loginUser['role'] ?? '') === 'admin'): ?>
-                         <a href="index.php?module=support&action=manage_users" class="btn-manage-users">จัดการผู้ใช้งาน</a>
-                     <?php endif; ?>
-                    <a href="index.php?module=support&action=profile" class="btn-edit-profile">แก้ไขโปรไฟล์</a>
-                    <a href="index.php?module=support&action=logout" class="btn-logout" onclick="return confirm('ยืนยันออกจากระบบ?')">ออกจากระบบ</a>
+                        <?php if (($loginUser['role'] ?? '') === 'admin'): ?>
+                            <a href="index.php?module=support&action=manage_users" class="btn-manage-users">จัดการผู้ใช้งาน</a>
+                        <?php endif; ?>
+                        <a href="index.php?module=support&action=profile" class="btn-edit-profile">แก้ไขโปรไฟล์</a>
+                        <a href="index.php?module=support&action=logout" class="btn-logout" onclick="return confirm('ยืนยันออกจากระบบ?')">ออกจากระบบ</a>
                     </div>
                 </div>
 
+                <!-- ส่วนหัวระบบ -->
                 <div class="support-header">
                     <h1 class="support-title">ระบบแจ้งซ่อม IT Support</h1>
                     <a href="index.php?module=support&action=add" class="btn btn-primary">+ แจ้งซ่อมใหม่</a>
                 </div>
                 
+                <!-- การ์ดสรุปสถิติตั๋วซ่อม -->
                 <div class="stats-grid">
                     <div class="stat-card">
                         <span class="stat-title">ทั้งหมด</span>
@@ -57,9 +60,10 @@ class View
                     </div>
                 </div>
 
+                <!-- แถบค้นหาและตัวกรอง -->
                 <form method="get" action="index.php" class="filter-bar">
                     <input type="hidden" name="module" value="support">
-                    <input type="text" name="search" class="filter-input" placeholder="ค้นหาหัวข้อหรือรายละเอียด" value="<?php echo htmlspecialchars($search); ?>">
+                    <input type="text" name="search" class="filter-input" placeholder="ค้นหาหัวข้อ, รายละเอียด หรือรหัสทรัพย์สิน..." value="<?php echo htmlspecialchars($search); ?>">
 
                     <select name="status" class="filter-select" onchange="this.form.submit()">
                         <option value="" <?php echo empty($selectedStatus) ? 'selected="selected"' : ''; ?>>-- ทุกสถานะ --</option>
@@ -91,7 +95,7 @@ class View
                             <th class="col-id">ID</th>
                             <th class="col-img">รูปภาพ</th>
                             <th class="col-cat">หมวดหมู่</th>
-                            <th class="col-title">หัวข้อ</th>
+                            <th class="col-title">หัวข้อ / อุปกรณ์</th>
                             <th class="detail">รายละเอียด</th>
                             <th class="col-user">ผู้แจ้ง</th>
                             <th class="col-date">วันที่แจ้ง</th>
@@ -140,6 +144,9 @@ class View
                                     </td>
                                     <td>
                                         <a href="index.php?module=support&action=view&id=<?php echo $row['id']; ?>" class="ticket-link">
+                                            <?php if (!empty($row['asset_code'])): ?>
+                                                <span class="asset-badge">[<?php echo htmlspecialchars($row['asset_code']); ?>]</span>
+                                            <?php endif; ?>
                                             <strong><?php echo htmlspecialchars($row['title']); ?></strong>
                                         </a>
                                     </td>
@@ -159,26 +166,26 @@ class View
                                         </span>
                                     </td>
                                     <td class="text-center">
-                                    <div class="action-group">
-                                        <?php 
-                                            $filterParams = '';
-                                            if (!empty($search)) { $filterParams .= '&search=' . urlencode($search); }
-                                            if (!empty($selectedStatus)) { $filterParams .= '&status=' . urlencode($selectedStatus); }
-                                            if ($selectedCategory > 0) { $filterParams .= '&category_id=' . $selectedCategory; }
-                                            $userRole = $loginUser['role'] ?? 'user';
-                                        ?>
+                                        <div class="action-group">
+                                            <?php 
+                                                $filterParams = '';
+                                                if (!empty($search)) { $filterParams .= '&search=' . urlencode($search); }
+                                                if (!empty($selectedStatus)) { $filterParams .= '&status=' . urlencode($selectedStatus); }
+                                                if ($selectedCategory > 0) { $filterParams .= '&category_id=' . $selectedCategory; }
+                                                $userRole = $loginUser['role'] ?? 'user';
+                                            ?>
 
-                                        <?php if (in_array($userRole, ['staff', 'admin'])): ?>
-                                            <?php if ($row['status'] === 'pending'): ?>
-                                                <a href="index.php?module=support&action=status&id=<?php echo $row['id']; ?>&status=in_progress<?php echo $filterParams; ?>" class="btn-status btn-status-process">รับเรื่อง</a>
-                                            <?php elseif ($row['status'] === 'in_progress'): ?>
-                                                <a href="index.php?module=support&action=status&id=<?php echo $row['id']; ?>&status=completed<?php echo $filterParams; ?>" class="btn-status btn-status-complete">ปิดงาน</a>
+                                            <?php if (in_array($userRole, ['staff', 'admin'])): ?>
+                                                <?php if ($row['status'] === 'pending'): ?>
+                                                    <a href="index.php?module=support&action=status&id=<?php echo $row['id']; ?>&status=in_progress<?php echo $filterParams; ?>" class="btn-status btn-status-process">รับเรื่อง</a>
+                                                <?php elseif ($row['status'] === 'in_progress'): ?>
+                                                    <a href="index.php?module=support&action=status&id=<?php echo $row['id']; ?>&status=completed<?php echo $filterParams; ?>" class="btn-status btn-status-complete">ปิดงาน</a>
+                                                <?php endif; ?>
                                             <?php endif; ?>
-                                        <?php endif; ?>
-                                        
-                                        <?php if ($userRole === 'admin' || ($userRole === 'user' && $row['user_id'] == $loginUser['id'] && $row['status'] === 'pending')): ?>
-                                            <a href="index.php?module=support&action=delete&id=<?php echo $row['id']; ?><?php echo $filterParams; ?>" class="btn-delete" onclick="return confirm('ยืนยันการลบรายการนี้?')">ลบ</a>
-                                        <?php endif; ?>
+                                            
+                                            <?php if ($userRole === 'admin' || ($userRole === 'user' && $row['user_id'] == $loginUser['id'] && $row['status'] === 'pending')): ?>
+                                                <a href="index.php?module=support&action=delete&id=<?php echo $row['id']; ?><?php echo $filterParams; ?>" class="btn-delete" onclick="return confirm('ยืนยันการลบรายการนี้?')">ลบ</a>
+                                            <?php endif; ?>
                                         </div>
                                     </td>
                                 </tr>
