@@ -18,7 +18,7 @@ class AddView
         <body>
             <div class="support-form-container">
                 <div class="support-header">
-                    <h1 class="support-title">➕ เพิ่มรายการแจ้งซ่อมใหม่</h1>
+                    <h1 class="support-title">เพิ่มรายการแจ้งซ่อมใหม่</h1>
                 </div>
                 
                 <form action="index.php?module=support&action=save" method="post" enctype="multipart/form-data">

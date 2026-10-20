@@ -3,7 +3,7 @@ namespace Support\Index;
 
 class DetailView
 {
-    public function render($request, $ticket = [], $loginUser = [])
+    public function render($request, $ticket = [], $comments = [], $loginUser = [])
     {
         ob_start();
         ?>
@@ -36,6 +36,23 @@ class DetailView
                     <div class="info-item">
                         <span class="info-label">ผู้แจ้งซ่อม</span>
                         <span class="info-value"><?php echo htmlspecialchars($ticket['user_name'] ?? 'ทั่วไป'); ?></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">หมวดหมู่</span>
+                        <span class="info-value">
+                            <span class="category-badge"><?php echo htmlspecialchars($ticket['category_name'] ?? 'ทั่วไป'); ?></span>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">อุปกรณ์ / รหัสทรัพย์สิน</span>
+                        <span class="info-value">
+                            <?php if (!empty($ticket['asset_code'])): ?>
+                                <span class="asset-badge">[<?php echo htmlspecialchars($ticket['asset_code']); ?>]</span>
+                                <?php echo htmlspecialchars($ticket['asset_name']); ?>
+                            <?php else: ?>
+                                <span class="text-muted">ไม่ระบุ</span>
+                            <?php endif; ?>
+                        </span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">วันที่แจ้ง</span>
@@ -80,6 +97,41 @@ class DetailView
                     </div>
                 <?php endif; ?>
 
+                <div class="detail-section comments-section">
+                    <h3 class="section-subtitle">ประวัติการติดตามงาน / บันทึกการซ่อม</h3>
+
+                    <div class="comment-timeline">
+                        <?php if (!empty($comments)): ?>
+                            <?php foreach ($comments as $c): ?>
+                                <div class="comment-item">
+                                    <div class="comment-header">
+                                        <div class="comment-author">
+                                            <strong><?php echo htmlspecialchars($c['user_name']); ?></strong>
+                                            <span class="role-badge role-<?php echo $c['user_role']; ?>"><?php echo strtoupper($c['user_role']); ?></span>
+                                        </div>
+                                        <span class="comment-time"><?php echo self::formatThaiDate($c['created_at']); ?></span>
+                                    </div>
+                                    <div class="comment-body">
+                                        <?php echo nl2br(htmlspecialchars($c['comment'])); ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="comment-empty">
+                                ยังไม่มีประวัติการโต้ตอบหรืออัปเดตงานสำหรับรายการนี้
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <form action="index.php?module=support&action=add_comment" method="post" class="comment-form">
+                        <input type="hidden" name="ticket_id" value="<?php echo $ticket['id']; ?>">
+                        <div class="form-group">
+                            <label class="form-label">เขียนข้อความโต้ตอบ / บันทึกความคืบหน้า:</label>
+                            <textarea name="comment" class="form-control" rows="3" placeholder="พิมพ์รายละเอียดเพิ่มเติม..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">ส่งข้อความ</button>
+                    </form>
+                </div>
                 <div class="detail-actions">
                     <a href="index.php?module=support" class="btn btn-secondary">กลับหน้าหลัก</a>
 
