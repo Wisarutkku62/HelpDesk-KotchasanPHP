@@ -47,70 +47,85 @@
         color: #1b2559;
     }
 
-    .support-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-    }
+.support-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    table-layout: fixed;
+}
 
-    .support-table th {
-        background-color: #f8fafc;
-        color: #a3b2c7;
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 14px 16px;
-        text-align: left;
-        border-bottom: 1px solid #e9edf7;
-        vertical-align: middle;
-    }
+.support-table th {
+    background-color: #f8fafc;
+    color: #a3b2c7;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid #e9edf7;
+    vertical-align: middle;
+}
 
-    .support-table td {
-        padding: 16px;
-        border-bottom: 1px solid #f4f7fe;
-        font-size: 0.95rem;
-        color: #2b3674;
-        vertical-align: middle;
-    }
+.support-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #f4f7fe;
+    font-size: 0.95rem;
+    color: #2b3674;
+    vertical-align: middle;
+    word-wrap: break-word;
+    word-break: break-word;
+}
 
-    .support-table tbody tr {
-        transition: all 0.2s ease;
-    }
+.support-table tbody tr {
+    transition: all 0.2s ease;
+}
 
-    .support-table tbody tr:hover {
-        background-color: #f8fafc;
-    }
+.support-table tbody tr:hover {
+    background-color: #f8fafc;
+}
 
-    .support-table th.col-id {
-        width: 60px;
-    }
+.support-table th.col-id {
+    width: 50px;
+}
 
-    .support-table th.col-img {
-        width: 80px;
-    }
+.support-table th.col-img {
+    width: 65px;
+}
 
-    .support-table th.col-user {
-        width: 150px;
-    }
+.support-table th.col-cat {
+    width: 110px;
+}
 
-    .support-table th.col-date {
-        width: 160px;
-    }
+.support-table th.col-title {
+    width: 150px;
+}
 
-    .support-table th.col-status {
-        width: 140px;
-    }
+.support-table th.col-detail {
+    width: auto; 
+}
 
-    .support-table th.col-action {
-        width: 160px;
-        text-align: center;
-    }
+.support-table th.col-user {
+    width: 120px;
+}
 
-    .support-table td:last-child {
-        white-space: nowrap;
-        text-align: center;
-    }
+.support-table th.col-date {
+    width: 140px;
+}
+
+.support-table th.col-status {
+    width: 110px;
+}
+
+.support-table th.col-action {
+    width: 120px;
+    text-align: center;
+}
+
+.support-table td:last-child {
+    white-space: nowrap;
+    text-align: center;
+}
 
     .user-name-text,
     .ticket-date,
@@ -683,3 +698,13 @@
         font-size: 0.85rem;
         white-space: nowrap;
     }
+    .category-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #475569;
+    background-color: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+}

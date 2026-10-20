@@ -3,7 +3,7 @@ namespace Support\Index;
 
 class AddView
 {
-    public function render($request)
+    public function render($request, $categories = [])
     {
         ob_start();
         ?>
@@ -18,13 +18,25 @@ class AddView
         <body>
             <div class="support-form-container">
                 <div class="support-header">
-                    <h1 class="support-title"> เพิ่มรายการแจ้งซ่อมใหม่</h1>
+                    <h1 class="support-title">➕ เพิ่มรายการแจ้งซ่อมใหม่</h1>
                 </div>
                 
                 <form action="index.php?module=support&action=save" method="post" enctype="multipart/form-data">
                     <div class="form-group">
                         <label class="form-label">หัวข้อแจ้งซ่อม <span style="color: #ee5d50;">*</span></label>
                         <input type="text" name="title" class="form-control" placeholder="ระบุปัญหา เช่น เครื่องพิมพ์ใช้งานไม่ได้" required autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">หมวดหมู่ปัญหา <span style="color: #ee5d50;">*</span></label>
+                        <select name="category_id" class="form-control" required>
+                            <option value="">-- กรุณาเลือกหมวดหมู่ปัญหา --</option>
+                            <?php if (!empty($categories)): ?>
+                                <?php foreach ($categories as $cat): ?>
+                                    <option value="<?php echo $cat['id']; ?>"><?php echo htmlspecialchars($cat['name']); ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
                     </div>
 
                     <div class="form-group">

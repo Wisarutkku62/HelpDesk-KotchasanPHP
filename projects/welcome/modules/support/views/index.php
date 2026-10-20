@@ -3,7 +3,7 @@ namespace Support\Index;
 
 class View
 {
-    public function render($request, $tickets = [], $summary = [], $search = '', $selectedStatus = '', $loginUser = [])
+    public function render($request, $tickets = [], $summary = [], $search = '', $selectedStatus = '', $loginUser = [], $categories = [], $selectedCategory = 0)
     {
         ob_start();
         ?>
@@ -60,7 +60,7 @@ class View
                 <form method="get" action="index.php" class="filter-bar">
                     <input type="hidden" name="module" value="support">
                     <input type="text" name="search" class="filter-input" placeholder="ค้นหาหัวข้อหรือรายละเอียด" value="<?php echo htmlspecialchars($search); ?>">
-                    
+
                     <select name="status" class="filter-select" onchange="this.form.submit()">
                         <option value="" <?php echo empty($selectedStatus) ? 'selected="selected"' : ''; ?>>-- ทุกสถานะ --</option>
                         <option value="pending" <?php echo ($selectedStatus === 'pending') ? 'selected="selected"' : ''; ?>>รอดำเนินการ</option>
@@ -68,8 +68,19 @@ class View
                         <option value="completed" <?php echo ($selectedStatus === 'completed') ? 'selected="selected"' : ''; ?>>เสร็จสิ้น</option>
                     </select>
 
+                    <select name="category_id" class="filter-select" onchange="this.form.submit()">
+                        <option value="0">-- ทุกหมวดหมู่ --</option>
+                        <?php if (!empty($categories)): ?>
+                            <?php foreach ($categories as $cat): ?>
+                                <option value="<?php echo $cat['id']; ?>" <?php echo $selectedCategory == $cat['id'] ? 'selected="selected"' : ''; ?>>
+                                    <?php echo htmlspecialchars($cat['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+
                     <button type="submit" class="btn btn-primary btn-search">ค้นหา</button>
-                    <?php if (!empty($search) || !empty($selectedStatus)): ?>
+                    <?php if (!empty($search) || !empty($selectedStatus) || $selectedCategory > 0): ?>
                         <a href="index.php?module=support" class="btn btn-reset">ล้างการค้นหา</a>
                     <?php endif; ?>
                 </form>
@@ -79,8 +90,9 @@ class View
                         <tr>
                             <th class="col-id">ID</th>
                             <th class="col-img">รูปภาพ</th>
-                            <th>หัวข้อ</th>
-                            <th>รายละเอียด</th>
+                            <th class="col-cat">หมวดหมู่</th>
+                            <th class="col-title">หัวข้อ</th>
+                            <th class="detail">รายละเอียด</th>
                             <th class="col-user">ผู้แจ้ง</th>
                             <th class="col-date">วันที่แจ้ง</th>
                             <th class="col-status">สถานะ</th>
@@ -92,8 +104,7 @@ class View
                             <?php foreach ($tickets as $row): ?>
                                 <tr>
                                     <td>
-                                            <strong>#<?php echo $row['id']; ?></strong>
-                                        </a>
+                                        <strong>#<?php echo $row['id']; ?></strong>
                                     </td>
                                     <td>
                                         <?php 
@@ -123,6 +134,11 @@ class View
                                         <?php endif; ?>
                                     </td>
                                     <td>
+                                        <span class="category-badge">
+                                            <?php echo htmlspecialchars($row['category_name'] ?? 'ทั่วไป'); ?>
+                                        </span>
+                                    </td>
+                                    <td>
                                         <a href="index.php?module=support&action=view&id=<?php echo $row['id']; ?>" class="ticket-link">
                                             <strong><?php echo htmlspecialchars($row['title']); ?></strong>
                                         </a>
@@ -147,6 +163,7 @@ class View
                                             $filterParams = '';
                                             if (!empty($search)) { $filterParams .= '&search=' . urlencode($search); }
                                             if (!empty($selectedStatus)) { $filterParams .= '&status=' . urlencode($selectedStatus); }
+                                            if ($selectedCategory > 0) { $filterParams .= '&category_id=' . $selectedCategory; }
                                             $userRole = $loginUser['role'] ?? 'user';
                                         ?>
 
@@ -166,7 +183,7 @@ class View
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="8" class="text-center text-muted empty-state">
+                                <td colspan="9" class="text-center text-muted empty-state">
                                     ไม่พบรายการแจ้งซ่อมที่ตรงกับเงื่อนไข
                                 </td>
                             </tr>
