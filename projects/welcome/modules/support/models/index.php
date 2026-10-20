@@ -14,21 +14,22 @@ class Model
         $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 
-        $pdo->exec("CREATE TABLE IF NOT EXISTS tickets (
+        $pdo->exec("CREATE TABLE IF NOT EXISTS categories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            detail TEXT,
-            status TEXT DEFAULT 'pending',
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            name TEXT NOT NULL
         )");
 
-        try {
-            $pdo->exec("ALTER TABLE tickets ADD COLUMN user_id INTEGER DEFAULT 0");
-        } catch (\Throwable $e) {}
+        $pdo->exec("CREATE TABLE IF NOT EXISTS departments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL
+        )");
 
-        try {
-            $pdo->exec("ALTER TABLE tickets ADD COLUMN image TEXT");
-        } catch (\Throwable $e) {}
+        $pdo->exec("CREATE TABLE IF NOT EXISTS assets (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            asset_code TEXT UNIQUE NOT NULL,
+            name TEXT NOT NULL,
+            location TEXT
+        )");
 
         $pdo->exec("CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,11 +37,51 @@ class Model
             password TEXT NOT NULL,
             name TEXT NOT NULL,
             role TEXT DEFAULT 'user',
+            department_id INTEGER DEFAULT 1,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )");
 
-        $stmt = $pdo->query("SELECT COUNT(*) FROM users");
-        if ($stmt->fetchColumn() == 0) {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS tickets (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            detail TEXT,
+            image TEXT,
+            status TEXT DEFAULT 'pending',
+            user_id INTEGER DEFAULT 0,
+            category_id INTEGER DEFAULT NULL,
+            asset_id INTEGER DEFAULT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS ticket_comments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ticket_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            comment TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )");
+
+        try { $pdo->exec("ALTER TABLE tickets ADD COLUMN user_id INTEGER DEFAULT 0"); } catch (\Throwable $e) {}
+        try { $pdo->exec("ALTER TABLE tickets ADD COLUMN image TEXT"); } catch (\Throwable $e) {}
+        try { $pdo->exec("ALTER TABLE tickets ADD COLUMN category_id INTEGER DEFAULT NULL"); } catch (\Throwable $e) {}
+        try { $pdo->exec("ALTER TABLE tickets ADD COLUMN asset_id INTEGER DEFAULT NULL"); } catch (\Throwable $e) {}
+
+        $stmtCat = $pdo->query("SELECT COUNT(*) FROM categories");
+        if ($stmtCat->fetchColumn() == 0) {
+            $pdo->exec("INSERT INTO categories (name) VALUES 
+                ('อุปกรณ์ฮาร์ดแวร์'),
+                ('โปรแกรม/ซอฟต์แวร์'),
+                ('ระบบเครือข่าย/อินเทอร์เน็ต'),
+                ('เครื่องพิมพ์/สแกนเนอร์')");
+        }
+
+        $stmtDept = $pdo->query("SELECT COUNT(*) FROM departments");
+        if ($stmtDept->fetchColumn() == 0) {
+            $pdo->exec("INSERT INTO departments (name) VALUES ('ไอที/ระบบ'), ('บัญชีและการเงิน'), ('การตลาด'), ('ทรัพยากรบุคคล')");
+        }
+
+        $stmtUser = $pdo->query("SELECT COUNT(*) FROM users");
+        if ($stmtUser->fetchColumn() == 0) {
             $pdo->prepare("INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?)")
                 ->execute(['admin', password_hash('admin1234', PASSWORD_DEFAULT), 'ผู้ดูแลระบบ (Admin)', 'admin']);
             $pdo->prepare("INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?)")
@@ -48,46 +89,26 @@ class Model
             $pdo->prepare("INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?)")
                 ->execute(['user', password_hash('user1234', PASSWORD_DEFAULT), 'สมหมาย นะจ๊ะ', 'user']);
         }
+
         return $pdo;
-
-        $pdo->exec("
-            CREATE TABLE IF NOT EXISTS categories (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS departments (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL
-            );
-        ");
-
-        try {
-            $pdo->exec("ALTER TABLE tickets ADD COLUMN category_id INTEGER DEFAULT NULL;");
-            $pdo->exec("INSERT INTO categories (name) VALUES 
-                ('อุปกรณ์ฮาร์ดแวร์'),
-                ('โปรแกรม/ซอฟต์แวร์'),
-                ('ระบบเครือข่าย/อินเทอร์เน็ต'),
-                ('เครื่องพิมพ์/สแกนเนอร์');");
-        } catch (\Throwable $e) {
-
-        }
     }
 
     public static function addTicket($save, $userId = 0)
     {
         try {
             $pdo = self::connectDB();
-            $stmt = $pdo->prepare("INSERT INTO tickets (user_id, title, detail, image, status, created_at) VALUES (:user_id, :title, :detail, :image, :status, :created_at)");
+            $stmt = $pdo->prepare("INSERT INTO tickets (user_id, category_id, title, detail, image, status, created_at) VALUES (:user_id, :category_id, :title, :detail, :image, :status, :created_at)");
             return $stmt->execute([
-                ':user_id'    => $userId,
-                ':title'      => $save['title'],
-                ':detail'     => $save['detail'] ?? '',
-                ':image'      => $save['image'] ?? '',
-                ':status'     => $save['status'] ?? 'pending',
-                ':created_at' => date('Y-m-d H:i:s')
+                ':user_id'     => $userId,
+                ':category_id' => !empty($save['category_id']) ? (int)$save['category_id'] : null,
+                ':title'       => $save['title'],
+                ':detail'      => $save['detail'] ?? '',
+                ':image'       => $save['image'] ?? '',
+                ':status'      => $save['status'] ?? 'pending',
+                ':created_at'  => date('Y-m-d H:i:s')
             ]);
         } catch (\Throwable $e) {
-            return False;
+            return false;
         }
     }
 
@@ -105,7 +126,7 @@ class Model
         }
     }
 
-    public static function deleteTicket($id)
+    public static function deleteTicket($id, $userId = 0, $role = 'admin')
     {
         try {
             $pdo = self::connectDB();
@@ -114,18 +135,22 @@ class Model
                 return $stmt->execute([':id' => (int)$id]);
             } else {
                 $stmt = $pdo->prepare("DELETE FROM tickets WHERE id = :id AND user_id = :user_id AND status = 'pending'");
-                return $stmt->execute([':id' => (int)$id, ':user_id' => $userId]);
+                return $stmt->execute([':id' => (int)$id, ':user_id' => (int)$userId]);
             }
         } catch (\Throwable $e) {
             return false;
         }
     }
 
-    public static function getTickets($search = '', $status = '', $userId = 0, $role = 'admin')
+    public static function getTickets($search = '', $status = '', $userId = 0, $role = 'admin', $categoryId = 0)
     {
         try {
             $pdo = self::connectDB();
-            $sql = "SELECT t.*, u.name as user_name FROM tickets t LEFT JOIN users u ON t.user_id = u.id WHERE 1=1";
+            $sql = "SELECT t.*, u.name as user_name, c.name as category_name 
+                    FROM tickets t 
+                    LEFT JOIN users u ON t.user_id = u.id 
+                    LEFT JOIN categories c ON t.category_id = c.id 
+                    WHERE 1=1";
             $params = [];
 
             if ($role === 'user') {
@@ -143,6 +168,11 @@ class Model
                 $params[':status'] = $status;
             }
 
+            if ($categoryId > 0) {
+                $sql .= " AND t.category_id = :category_id";
+                $params[':category_id'] = $categoryId;
+            }
+
             $sql .= " ORDER BY t.id DESC";
 
             $stmt = $pdo->prepare($sql);
@@ -153,7 +183,7 @@ class Model
         }
     }
 
-     public static function getSummary()
+    public static function getSummary($userId = 0, $role = 'admin')
     {
         try {
             $pdo = self::connectDB();
@@ -203,14 +233,16 @@ class Model
             return false;
         }
     }
+
     public static function getTicketById($id)
     {
         try {
             $pdo = self::connectDB();
             $stmt = $pdo->prepare("
-                SELECT t.*, u.name AS user_name, u.role AS user_role
+                SELECT t.*, u.name AS user_name, u.role AS user_role, c.name AS category_name
                 FROM tickets t
                 LEFT JOIN users u ON t.user_id = u.id
+                LEFT JOIN categories c ON t.category_id = c.id
                 WHERE t.id = :id
                 LIMIT 1
             ");
@@ -220,6 +252,7 @@ class Model
             return null;
         }
     }
+
     public static function updateProfile($userId, $name, $password = '')
     {
         try {
@@ -244,7 +277,7 @@ class Model
         }
     }
 
-   public static function getUsers()
+    public static function getUsers()
     {
         try {
             $pdo = self::connectDB();
@@ -288,7 +321,7 @@ class Model
             return false;
         }
     }
-    
+
     public static function getCategories()
     {
         try {
@@ -310,5 +343,4 @@ class Model
             return [];
         }
     }
-    
 }

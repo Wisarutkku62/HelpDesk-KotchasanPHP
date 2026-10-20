@@ -85,7 +85,7 @@ class Controller extends \Kotchasan\Controller
             return;
         }
 
-        //Auth Guard
+        // Auth Guard
         if (empty($_SESSION['login_user'])) {
             if (ob_get_length()) { ob_clean(); }
             header('Location: index.php?module=support&action=login');
@@ -96,20 +96,23 @@ class Controller extends \Kotchasan\Controller
         $loginUser = $_SESSION['login_user'];
         $search = $_GET['search'] ?? $request->get('search')->topic();
         $selectedStatus = $_GET['status'] ?? $request->get('status')->topic();
+        $selectedCategory = (int)($_GET['category_id'] ?? $request->get('category_id')->toInt()); // 👈 รองรับตัวกรองหมวดหมู่
 
         $queryParams = [];
         if (!empty($search)) { $queryParams[] = 'search=' . urlencode($search); }
         if (!empty($selectedStatus)) { $queryParams[] = 'status=' . urlencode($selectedStatus); }
+        if ($selectedCategory > 0) { $queryParams[] = 'category_id=' . $selectedCategory; }
         $redirectUrl = 'index.php?module=support' . (!empty($queryParams) ? '&' . implode('&', $queryParams) : '');
 
         if ($action === 'add') {
+            $categories = \Support\Index\Model::getCategories();
             require_once ROOT_PATH . 'projects/welcome/modules/support/views/add.php';
             $view = new \Support\Index\AddView();
-            echo $view->render($request);
+            echo $view->render($request, $categories);
             return;
         }
 
-       if ($action === 'save' && $request->isPost()) {
+        if ($action === 'save' && $request->isPost()) {
             $imageName = '';
             if (!empty($_FILES['image']['name']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
                 $uploadDir = ROOT_PATH . 'datas/uploads/';
@@ -129,10 +132,11 @@ class Controller extends \Kotchasan\Controller
             }
 
             $save = [
-                'title'  => $request->post('title')->topic(),
-                'detail' => $request->post('detail')->topic(),
-                'image'  => $imageName,
-                'status' => 'pending'
+                'title'       => $request->post('title')->topic(),
+                'detail'      => $request->post('detail')->topic(),
+                'category_id' => $request->post('category_id')->toInt(), // 👈 รับค่าหมวดหมู่
+                'image'       => $imageName,
+                'status'      => 'pending'
             ];
 
             if (!empty($save['title'])) {
@@ -236,8 +240,8 @@ class Controller extends \Kotchasan\Controller
             }
         }
 
-        //Admin
-       if ($action === 'manage_users') {
+        // Admin Management
+        if ($action === 'manage_users') {
             if (($loginUser['role'] ?? '') !== 'admin') {
                 if (ob_get_length()) { ob_clean(); }
                 header('Location: index.php?module=support');
@@ -248,7 +252,7 @@ class Controller extends \Kotchasan\Controller
             if (file_exists($viewFile)) {
                 require_once $viewFile;
             } else {
-                die('ไม่พบไฟล์ views/users.php กรุณาตรวจสอบการสร้างไฟล์');
+                die('ไม่พบไฟล์ views/manage_users.php กรุณาตรวจสอบการสร้างไฟล์');
             }
 
             $users = \Support\Index\Model::getUsers();
@@ -312,8 +316,9 @@ class Controller extends \Kotchasan\Controller
         }
 
         $summary = \Support\Index\Model::getSummary($loginUser['id'], $loginUser['role']);
-        $tickets = \Support\Index\Model::getTickets($search, $selectedStatus, $loginUser['id'], $loginUser['role']);
+        $categories = \Support\Index\Model::getCategories();
+        $tickets = \Support\Index\Model::getTickets($search, $selectedStatus, $loginUser['id'], $loginUser['role'], $selectedCategory);
         $view = new \Support\Index\View();
-        echo $view->render($request, $tickets, $summary, $search, $selectedStatus, $loginUser);
+        echo $view->render($request, $tickets, $summary, $search, $selectedStatus, $loginUser, $categories, $selectedCategory);
     }
 }
