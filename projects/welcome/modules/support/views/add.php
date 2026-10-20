@@ -3,7 +3,7 @@ namespace Support\Index;
 
 class AddView
 {
-    public function render($request, $categories = [])
+    public function render($request, $categories = [], $assets = [])
     {
         ob_start();
         ?>
@@ -23,17 +23,31 @@ class AddView
                 
                 <form action="index.php?module=support&action=save" method="post" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label class="form-label">หัวข้อแจ้งซ่อม <span style="color: #ee5d50;">*</span></label>
+                        <label class="form-label">หัวข้อแจ้งซ่อม <span class="required-asterisk">*</span></label>
                         <input type="text" name="title" class="form-control" placeholder="ระบุปัญหา เช่น เครื่องพิมพ์ใช้งานไม่ได้" required autocomplete="off">
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">หมวดหมู่ปัญหา <span style="color: #ee5d50;">*</span></label>
+                        <label class="form-label">หมวดหมู่ปัญหา <span class="required-asterisk">*</span></label>
                         <select name="category_id" class="form-control" required>
                             <option value="">-- กรุณาเลือกหมวดหมู่ปัญหา --</option>
                             <?php if (!empty($categories)): ?>
                                 <?php foreach ($categories as $cat): ?>
                                     <option value="<?php echo $cat['id']; ?>"><?php echo htmlspecialchars($cat['name']); ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">อุปกรณ์ / ทรัพย์สินชำรุด (ถ้ามี)</label>
+                        <select name="asset_id" class="form-control">
+                            <option value="">-- ไม่ระบุ / อุปกรณ์ทั่วไป --</option>
+                            <?php if (!empty($assets)): ?>
+                                <?php foreach ($assets as $ast): ?>
+                                    <option value="<?php echo $ast['id']; ?>">
+                                        [<?php echo htmlspecialchars($ast['asset_code']); ?>] <?php echo htmlspecialchars($ast['name']); ?>
+                                    </option>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </select>
@@ -47,10 +61,10 @@ class AddView
                     <div class="form-group">
                         <label class="form-label">แนบรูปภาพประกอบ (อุปกรณ์ชำรุด)</label>
                         <input type="file" name="image" class="form-control" accept="image/png, image/jpeg, image/jpg, image/webp">
-                        <small style="color: #64748b; font-size: 0.8rem; display: block; margin-top: 4px;">รองรับไฟล์ .jpg, .jpeg, .png, .webp (ไม่เกิน 5MB)</small>
+                        <small class="form-hint">รองรับไฟล์ .jpg, .jpeg, .png, .webp (ไม่เกิน 5MB)</small>
                     </div>
 
-                    <div style="display: flex; gap: 12px; margin-top: 28px;">
+                    <div class="form-actions">
                         <button type="submit" class="btn btn-success">บันทึกข้อมูล</button>
                         <a href="index.php?module=support" class="btn btn-secondary">ยกเลิก</a>
                     </div>

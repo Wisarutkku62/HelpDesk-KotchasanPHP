@@ -106,9 +106,10 @@ class Controller extends \Kotchasan\Controller
 
         if ($action === 'add') {
             $categories = \Support\Index\Model::getCategories();
+            $assets = \Support\Index\Model::getAssets();
             require_once ROOT_PATH . 'projects/welcome/modules/support/views/add.php';
             $view = new \Support\Index\AddView();
-            echo $view->render($request, $categories);
+            echo $view->render($request, $categories, $assets);
             return;
         }
 
@@ -135,6 +136,7 @@ class Controller extends \Kotchasan\Controller
                 'title'       => $request->post('title')->topic(),
                 'detail'      => $request->post('detail')->topic(),
                 'category_id' => $request->post('category_id')->toInt(),
+                'asset_id'    => $request->post('asset_id')->toInt(), // 👈 รับค่า asset_id เพิ่มเติม
                 'image'       => $imageName,
                 'status'      => 'pending'
             ];
