@@ -159,6 +159,7 @@ class View
                                         </span>
                                     </td>
                                     <td class="text-center">
+                                    <div class="action-group">
                                         <?php 
                                             $filterParams = '';
                                             if (!empty($search)) { $filterParams .= '&search=' . urlencode($search); }
@@ -178,6 +179,7 @@ class View
                                         <?php if ($userRole === 'admin' || ($userRole === 'user' && $row['user_id'] == $loginUser['id'] && $row['status'] === 'pending')): ?>
                                             <a href="index.php?module=support&action=delete&id=<?php echo $row['id']; ?><?php echo $filterParams; ?>" class="btn-delete" onclick="return confirm('ยืนยันการลบรายการนี้?')">ลบ</a>
                                         <?php endif; ?>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
