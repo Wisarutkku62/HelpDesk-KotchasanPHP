@@ -80,6 +80,15 @@ class Model
             $pdo->exec("INSERT INTO departments (name) VALUES ('ไอที/ระบบ'), ('บัญชีและการเงิน'), ('การตลาด'), ('ทรัพยากรบุคคล')");
         }
 
+        $stmtAsset = $pdo->query("SELECT COUNT(*) FROM assets");
+        if ($stmtAsset->fetchColumn() == 0) {
+            $pdo->exec("INSERT INTO assets (asset_code, name, location) VALUES 
+                ('AST-001', 'Notebook Dell XPS 13', 'แผนกไอที'),
+                ('AST-002', 'PC Office HP ProDesk', 'แผนกบัญชี'),
+                ('AST-003', 'Printer Canon LBP6030', 'ส่วนกลาง ชั้น 2'),
+                ('AST-004', 'Monitor LG 24 นิ้ว', 'แผนกการตลาด')");
+        }
+
         $stmtUser = $pdo->query("SELECT COUNT(*) FROM users");
         if ($stmtUser->fetchColumn() == 0) {
             $pdo->prepare("INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?)")
@@ -93,14 +102,26 @@ class Model
         return $pdo;
     }
 
+    public static function getAssets()
+    {
+        try {
+            $pdo = self::connectDB();
+            $stmt = $pdo->query("SELECT * FROM assets ORDER BY asset_code ASC");
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
     public static function addTicket($save, $userId = 0)
     {
         try {
             $pdo = self::connectDB();
-            $stmt = $pdo->prepare("INSERT INTO tickets (user_id, category_id, title, detail, image, status, created_at) VALUES (:user_id, :category_id, :title, :detail, :image, :status, :created_at)");
+            $stmt = $pdo->prepare("INSERT INTO tickets (user_id, category_id, asset_id, title, detail, image, status, created_at) VALUES (:user_id, :category_id, :asset_id, :title, :detail, :image, :status, :created_at)");
             return $stmt->execute([
                 ':user_id'     => $userId,
                 ':category_id' => !empty($save['category_id']) ? (int)$save['category_id'] : null,
+                ':asset_id'    => !empty($save['asset_id']) ? (int)$save['asset_id'] : null,
                 ':title'       => $save['title'],
                 ':detail'      => $save['detail'] ?? '',
                 ':image'       => $save['image'] ?? '',
@@ -146,10 +167,12 @@ class Model
     {
         try {
             $pdo = self::connectDB();
-            $sql = "SELECT t.*, u.name as user_name, c.name as category_name 
+            $sql = "SELECT t.*, u.name as user_name, c.name as category_name,
+                           a.asset_code, a.name as asset_name
                     FROM tickets t 
                     LEFT JOIN users u ON t.user_id = u.id 
                     LEFT JOIN categories c ON t.category_id = c.id 
+                    LEFT JOIN assets a ON t.asset_id = a.id
                     WHERE 1=1";
             $params = [];
 
@@ -159,7 +182,7 @@ class Model
             }
 
             if (!empty($search)) {
-                $sql .= " AND (t.title LIKE :search OR t.detail LIKE :search)";
+                $sql .= " AND (t.title LIKE :search OR t.detail LIKE :search OR a.asset_code LIKE :search OR a.name LIKE :search)";
                 $params[':search'] = '%' . $search . '%';
             }
 
@@ -199,7 +222,7 @@ class Model
             return ['total' => 0, 'pending' => 0, 'in_progress' => 0, 'completed' => 0];
         }
     }
-    
+
     public static function login($username, $password)
     {
         try {
@@ -239,10 +262,12 @@ class Model
         try {
             $pdo = self::connectDB();
             $stmt = $pdo->prepare("
-                SELECT t.*, u.name AS user_name, u.role AS user_role, c.name AS category_name
+                SELECT t.*, u.name AS user_name, u.role AS user_role, c.name AS category_name,
+                       a.asset_code, a.name AS asset_name, a.location AS asset_location
                 FROM tickets t
                 LEFT JOIN users u ON t.user_id = u.id
                 LEFT JOIN categories c ON t.category_id = c.id
+                LEFT JOIN assets a ON t.asset_id = a.id
                 WHERE t.id = :id
                 LIMIT 1
             ");
