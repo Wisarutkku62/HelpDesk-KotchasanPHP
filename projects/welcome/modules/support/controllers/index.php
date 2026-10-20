@@ -10,7 +10,7 @@ class Controller extends \Kotchasan\Controller
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-
+        
         $action = $_GET['action'] ?? $_POST['action'] ?? $request->request('action')->topic();
 
         if ($action === 'logout') {
@@ -92,11 +92,11 @@ class Controller extends \Kotchasan\Controller
             exit;
         }
 
-        // User Login Only
+        // User Login Info & Parameters
         $loginUser = $_SESSION['login_user'];
         $search = $_GET['search'] ?? $request->get('search')->topic();
         $selectedStatus = $_GET['status'] ?? $request->get('status')->topic();
-        $selectedCategory = (int)($_GET['category_id'] ?? $request->get('category_id')->toInt()); // 👈 รองรับตัวกรองหมวดหมู่
+        $selectedCategory = (int)($_GET['category_id'] ?? $request->get('category_id')->toInt());
 
         $queryParams = [];
         if (!empty($search)) { $queryParams[] = 'search=' . urlencode($search); }
@@ -134,7 +134,7 @@ class Controller extends \Kotchasan\Controller
             $save = [
                 'title'       => $request->post('title')->topic(),
                 'detail'      => $request->post('detail')->topic(),
-                'category_id' => $request->post('category_id')->toInt(), // 👈 รับค่าหมวดหมู่
+                'category_id' => $request->post('category_id')->toInt(),
                 'image'       => $imageName,
                 'status'      => 'pending'
             ];
@@ -174,6 +174,22 @@ class Controller extends \Kotchasan\Controller
             exit;
         }
 
+        if ($action === 'add_comment' && $request->isPost()) {
+            $ticketId = $request->post('ticket_id')->toInt();
+            $comment = trim($request->post('comment')->textarea());
+
+            if ($ticketId > 0 && !empty($comment)) {
+                $ticket = \Support\Index\Model::getTicketById($ticketId);
+                if ($ticket && ($loginUser['role'] !== 'user' || $ticket['user_id'] == $loginUser['id'])) {
+                    \Support\Index\Model::addComment($ticketId, $loginUser['id'], $comment);
+                }
+            }
+
+            if (ob_get_length()) { ob_clean(); }
+            header('Location: index.php?module=support&action=view&id=' . $ticketId);
+            exit;
+        }
+
         if ($action === 'view') {
             $id = (int)$request->get('id')->toInt();
             $ticket = \Support\Index\Model::getTicketById($id);
@@ -187,9 +203,12 @@ class Controller extends \Kotchasan\Controller
                 header('Location: index.php?module=support');
                 exit;
             }
+
+            $comments = \Support\Index\Model::getCommentsByTicketId($id);
+
             require_once ROOT_PATH . 'projects/welcome/modules/support/views/detail.php';
             $view = new \Support\Index\DetailView();
-            echo $view->render($request, $ticket, $loginUser);
+            echo $view->render($request, $ticket, $comments, $loginUser);
             return;
         }
 
@@ -240,7 +259,6 @@ class Controller extends \Kotchasan\Controller
             }
         }
 
-        // Admin Management
         if ($action === 'manage_users') {
             if (($loginUser['role'] ?? '') !== 'admin') {
                 if (ob_get_length()) { ob_clean(); }
