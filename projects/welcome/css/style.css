@@ -854,6 +854,36 @@
         gap: 8px;
     }
 
+    .comment-author strong {
+        color: #1e293b;
+    }
+
+    .role-badge {
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
+
+    .role-badge.role-admin {
+        background-color: #fef2f2;
+        color: #ef4444;
+        border: 1px solid #fecaca;
+    }
+
+    .role-badge.role-staff {
+        background-color: #eff6ff;
+        color: #3b82f6;
+        border: 1px solid #bfdbfe;
+    }
+
+    .role-badge.role-user {
+        background-color: #f1f5f9;
+        color: #64748b;
+        border: 1px solid #cbd5e1;
+    }
+
     .comment-time {
         font-size: 0.78rem;
         color: #94a3b8;
@@ -877,4 +907,32 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
+    }
+
+    .comment-form .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .comment-form .form-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #475569;
+    }
+
+    .comment-form textarea.form-control {
+        width: 100%;
+        resize: vertical;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-family: inherit;
+        font-size: 0.9rem;
+    }
+
+    .comment-form textarea.form-control:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
     }
