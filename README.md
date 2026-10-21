@@ -72,19 +72,30 @@ projects/welcome/
         ├── register.php          # หน้าสมัครสมาชิก
         ├── profile.php           # หน้าแก้ไขโปรไฟล์
         └── manage_users.php      # หน้าจัดการผู้ใช้งาน (Admin)
+```
+##  การติดตั้งและใช้งาน (Installation Guide)
 
-การติดตั้งและใช้งาน (Installation Guide)
-คัดลอกไฟล์โปรเจกต์ ไปไว้ในไดเรกทอรีของ Web Server (เช่น htdocs สำหรับ XAMPP หรือ www สำหรับ WampServer)
+1. **คัดลอกไฟล์โปรเจกต์** ไปไว้ในไดเรกทอรีของ Web Server (เช่น `htdocs` สำหรับ XAMPP/Laragon หรือ `www` สำหรับ WampServer)
+2. **ตรวจสอบการเปิดใช้งาน PHP SQLite Extension** ในไฟล์ `php.ini` (โดยปกติระบบจำลองส่วนใหญ่จะเปิดใช้งานไว้แล้ว):
+   ```ini
+   extension=sqlite3
+   extension=pdo_sqlite
 
-ตรวจสอบการเปิดใช้งาน PHP SQLite Extension ในไฟล์ php.ini (ปกติจะเปิดใช้งานอยู่แล้ว):
+##  บัญชีผู้ใช้ทดสอบเริ่มต้น (Default Accounts)
 
-Ini, TOML
-extension=sqlite3
-extension=pdo_sqlite
-กำหนด Permissions Directory: ตรวจสอบให้แน่ใจว่าโฟลเดอร์ datas/ และ datas/uploads/ มีสิทธิ์เขียนไฟล์ได้ (0777 หรือ 0755)
+รหัสผ่านถูกเข้ารหัสความปลอดภัยด้วย `password_hash()` มาตรฐาน PHP (`PASSWORD_DEFAULT`):
 
-เปิดใช้งานผ่าน เว็บเบราว์เซอร์:
+| Username | Password | ชื่อ - นามสกุล | บทบาท (`role`) | สิทธิ์การใช้งานระบบ |
+| :--- | :--- | :--- | :---: | :--- |
+| `admin` | `admin1234` | ผู้ดูแลระบบ (Admin) | `admin` | สิทธิ์สูงสุด: จัดการผู้ใช้, รีเซ็ตรหัสผ่าน, ลบตั๋วแจ้งซ่อม |
+| `staff` | `staff1234` | ช่างไอที (Staff) | `staff` | สิทธิ์เจ้าหน้าที่: กดรับเรื่อง (`in_progress`), ปิดงาน (`completed`), ตอบคอมเมนต์ |
+| `user` | `user1234` | สมหมาย นะจ๊ะ | `user` | สิทธิ์ผู้ใช้ทั่วไป: สร้างตั๋วแจ้งซ่อม, ติดตามสถานะตั๋วตนเอง, ตอบคอมเมนต์ |
 
-Plaintext
-http://localhost/index.php?module=support
+---
+
+##  โครงสร้างฐานข้อมูล (Database Schema)
+
+ฐานข้อมูล SQLite (`datas/helpdesk.sql`) ประกอบด้วย 6 ตารางหลัก ดังนี้:
+
+
   
