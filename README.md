@@ -41,4 +41,50 @@
 * **Typography:** Google Fonts ('Prompt')
 
 ---
+## 📂 โครงสร้างโปรเจกต์ (Directory Structure)
+
+โปรเจกต์ได้รับการปรับปรุงสถาปัตยกรรมเป็นแบบ **Modular Controller & Model** เพื่อให้อ่านง่าย แก้ไขตรงจุด และไม่เกิดความสับสนเมื่อระบบขยายตัว
+
+```text
+projects/welcome/
+├── css/
+│   └── style.css                 # CSS 
+└── modules/support/
+    ├── controllers/              # Controller ตามกลุ่มหน้าที่
+    │   ├── index.php             # Main Router / Dispatcher
+    │   ├── auth.php              # Login, Register, Logout
+    │   ├── profile.php           # ดู/แก้ไขโปรไฟล์ส่วนตัว
+    │   ├── user.php              # จัดการสิทธิ์และสมาชิกระบบ (Admin Only)
+    │   └── ticket.php            # Dashboard, CRUD ตั๋วซ่อม, คอมเมนต์โต้ตอบ
+    ├── models/                   # Model ตามตาราง entrity (SQLite)
+    │   ├── db.php                # เชื่อมต่อ SQLite Database, Create Tables & Seeders
+    │   ├── user.php              # SQL จัดการตาราง users
+    │   ├── ticket.php            # SQL จัดการตาราง tickets & statistic
+    │   ├── comment.php           # SQL จัดการตาราง ticket_comments
+    │   ├── asset.php             # SQL จัดการตาราง assets
+    │   ├── category.php          # SQL จัดการตาราง categories & departments
+    │   └── index.php             # Model Facade รวมทุก Sub-model
+    └── views/                    # หน้าแสดงผล HTML
+        ├── index.php             # Dashboard หน้าหลัก & รายการตั๋วซ่อม
+        ├── add.php               # ฟอร์มเพิ่มรายการแจ้งซ่อมใหม่
+        ├── detail.php            # หน้ารายละเอียดตั๋วซ่อม & Timeline โต้ตอบ
+        ├── login.php             # หน้าเข้าสู่ระบบ
+        ├── register.php          # หน้าสมัครสมาชิก
+        ├── profile.php           # หน้าแก้ไขโปรไฟล์
+        └── manage_users.php      # หน้าจัดการผู้ใช้งาน (Admin)
+
+การติดตั้งและใช้งาน (Installation Guide)
+คัดลอกไฟล์โปรเจกต์ ไปไว้ในไดเรกทอรีของ Web Server (เช่น htdocs สำหรับ XAMPP หรือ www สำหรับ WampServer)
+
+ตรวจสอบการเปิดใช้งาน PHP SQLite Extension ในไฟล์ php.ini (ปกติจะเปิดใช้งานอยู่แล้ว):
+
+Ini, TOML
+extension=sqlite3
+extension=pdo_sqlite
+กำหนด Permissions Directory: ตรวจสอบให้แน่ใจว่าโฟลเดอร์ datas/ และ datas/uploads/ มีสิทธิ์เขียนไฟล์ได้ (0777 หรือ 0755)
+
+เปิดใช้งานผ่าน เว็บเบราว์เซอร์:
+
+Plaintext
+http://localhost/index.php?module=support
   
