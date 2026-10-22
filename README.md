@@ -30,7 +30,7 @@
 * จัดรูปการแสดงผลวันที่เป็นรูปแบบไทย (เช่น `21 ต.ค. 2569 00:00 น.`)
 
 ---
-## 🛠️ เทคโนโลยีที่ใช้ (Tech Stack)
+## เทคโนโลยีที่ใช้ (Tech Stack)
 
 * **Language:** PHP 7.4+ / PHP 8.x
 * **Framework:** Kotchasan PHP Framework
@@ -162,6 +162,7 @@ http://localhost:8000/index.php?module=support
 
 <img width="1048" height="940" alt="er diagram itsupport" src="https://github.com/user-attachments/assets/77ca8540-ddf4-45fb-b3d6-60e969910038" />
 
+## อธิบายโครงสร้าง
 | ตารางฝั่งหลัก (1) | 	ตารางฝั่งอ้างอิง (N) | 	ชนิดความสัมพันธ์ | ฟิลด์ที่ใช้เชื่อม (FK) | การทำงานในระบบ |
 |---|---|---|---|---|
 departments |	users |	1 : N |	users.department_id |	1 แผนก มีผู้ใช้งานสังกัดได้หลายคน แต่ผู้ใช้งาน 1 คน จะสังกัดได้เพียง 1 แผนก |
