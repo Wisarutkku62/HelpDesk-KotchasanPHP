@@ -91,9 +91,52 @@ projects/welcome/
 
 ---
 
-##  โครงสร้างฐานข้อมูล (Database Schema)
+## วิธีการติดตั้งและรันโปรแกรม (How to Run the Application)
 
-ฐานข้อมูล SQLite (`datas/helpdesk.sql`) ประกอบด้วย 6 ตารางหลัก ดังนี้:
+สามารถเลือกวิธีรันโปรแกรมได้ 2 รูปแบบ ทั้งการใช้ **Local Server Package (XAMPP / Laragon / WAMP)** หรือการใช้ **PHP Built-in Development Server** โดยไม่ต้องติดตั้งระบบฐานข้อมูลแยกต่างหาก เนื่องจากระบบใช้ SQLite 3
+
+---
+
+###  1. ความต้องการของระบบ (System Requirements)
+
+* **PHP:** เวอร์ชั่น 7.4 ขึ้นไป หรือ PHP 8.x
+* **PHP Extensionsที่ต้องเปิดใช้งาน:**
+  * `pdo_sqlite`
+  * `sqlite3`
+  * `fileinfo` (สำหรับการอัปโหลดรูปภาพ)
+
+---
+
+###  2. การเตรียมสภาพแวดล้อม (PHP Configuration)
+
+ก่อนรันโปรแกรม กรุณาตรวจสอบให้แน่ใจว่าได้เปิดใช้งาน Extension สำคัญในไฟล์ `php.ini` เรียบร้อยแล้ว:
+
+1. เปิดไฟล์ `php.ini` ในเครื่องของคุณ
+2. ค้นหาบรรทัดด้านล่าง และเอาเครื่องหมาย `;` ด้านหน้าออก (Uncomment):
+   ```ini
+   extension=pdo_sqlite
+   extension=sqlite3
+   extension=fileinfo
+
+ ### 3. วิธีการรันโปรแกรม
+ วิธีที่ 1: รันผ่าน Local Web Server (XAMPP / Laragon / WAMP)
+คัดลอกโฟลเดอร์โปรเจกต์ ไปวางในโฟลเดอร์ Web Root ของคุณ:
+
+- XAMPP: C:/xampp/htdocs/
+
+- Laragon: C:/laragon/www/
+
+- WampServer: C:/wamp64/www/
+
+ตรวจสอบสิทธิ์โฟลเดอร์ (Permissions):
+
+ตรวจสอบให้แน่ใจว่าโฟลเดอร์ datas/ และ datas/uploads/ สามารถอ่าน-เขียนไฟล์ได้
+
+เปิดเว็บเบราว์เซอร์ แล้วเข้าไปที่ URL:
+
+http://localhost/index.php?module=support
+
+##  โครงสร้างฐานข้อมูล (Database Schema)
 
 
   
