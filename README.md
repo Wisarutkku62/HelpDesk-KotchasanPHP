@@ -1,6 +1,5 @@
  🛠️ IT Helpdesk Support System (ระบบแจ้งซ่อมองค์กร)
-
-ระบบแจ้งซ่อม IT Support พัฒนาด้วย **Kotchasan PHP Framework** และ **SQLite Database** ออกแบบด้วยสถาปัตยกรรมแบบ **Modular MVC** เน้นความเบา มั่นคง และ UI ที่สะอาดสบายตา 
+## ระบบแจ้งซ่อม IT Support พัฒนาด้วย **Kotchasan PHP Framework** และ **SQLite Database** ออกแบบด้วยสถาปัตยกรรมแบบ **Modular MVC** เน้นความเบา มั่นคง และ UI ที่สะอาดสบายตา 
 
 ##  คุณสมบัติเด่นของระบบ (Key Features)
 
