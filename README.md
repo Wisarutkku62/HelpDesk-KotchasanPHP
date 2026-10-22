@@ -113,13 +113,15 @@ projects/welcome/
 
 1. เปิดไฟล์ `php.ini` ในเครื่องของคุณ
 2. ค้นหาบรรทัดด้านล่าง และเอาเครื่องหมาย `;` ด้านหน้าออก (Uncomment):
+   
    ```ini
    extension=pdo_sqlite
    extension=sqlite3
    extension=fileinfo
 
  ### 3. วิธีการรันโปรแกรม
- วิธีที่ 1: รันผ่าน Local Web Server (XAMPP / Laragon / WAMP)
+ 
+### วิธีที่ 1: รันผ่าน Local Web Server (XAMPP / Laragon / WAMP)
 คัดลอกโฟลเดอร์โปรเจกต์ ไปวางในโฟลเดอร์ Web Root ของคุณ:
 
 - XAMPP: C:/xampp/htdocs/
@@ -133,8 +135,28 @@ projects/welcome/
 ตรวจสอบให้แน่ใจว่าโฟลเดอร์ datas/ และ datas/uploads/ สามารถอ่าน-เขียนไฟล์ได้
 
 เปิดเว็บเบราว์เซอร์ แล้วเข้าไปที่ URL:
+```ini
 
 http://localhost/index.php?module=support
+```
+
+### วิธีที่ 2: รันผ่าน PHP Built-in Server (ไม่ต้องใช้ XAMPP)
+
+- เปิด Terminal หรือ Command Prompt (cmd)
+
+- ชี้ Path ไปยัง Directory หลักของโปรเจกต์:
+```ini
+
+cd /path/to/your/project
+```
+- พิมพ์คำสั่งเริ่มการรัน Web Server:
+```ini
+php -S localhost:8000
+```
+- เปิดเว็บเบราว์เซอร์ แล้วเข้าไปที่ URL:
+```ini
+http://localhost:8000/index.php?module=support
+```
 
 ##  โครงสร้างฐานข้อมูล (Database Schema)
 
