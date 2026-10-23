@@ -14,7 +14,7 @@ class LoginView
             <title>เข้าสู่ระบบ - IT Support</title>
             <link rel="stylesheet" href="css/style.css">
         </head>
-        <body style="background: #f8fafc;">
+        <body class="auth-body">
             <div class="auth-container">
                 <h1 class="auth-title">เข้าสู่ระบบ IT Support</h1>
 
@@ -31,11 +31,11 @@ class LoginView
                         <label>รหัสผ่าน (Password)</label>
                         <input type="password" name="password" class="form-control" required placeholder="กรอกรหัสผ่าน">
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;">เข้าสู่ระบบ</button>
+                    <button type="submit" class="btn btn-primary btn-submit">เข้าสู่ระบบ</button>
                 </form>
 
-                <p style="text-align: center; margin-top: 20px; font-size: 0.875rem; color: #64748b;">
-                    ยังไม่มีบัญชี? <a href="index.php?module=support&action=register" style="color: #4f46e5; text-decoration: none; font-weight: 600;">สมัครสมาชิก</a>
+                <p class="auth-footer">
+                    ยังไม่มีบัญชี? <a href="index.php?module=support&action=register" class="auth-link">สมัครสมาชิก</a>
                 </p>
             </div>
         </body>

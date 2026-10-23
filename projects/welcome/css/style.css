@@ -46,9 +46,6 @@ body {
     border: 1px solid #f1f5f9;
 }
 
-/* =============================================================
-   3. Header & User Bar
-   ============================================================= */
 .support-header {
     display: flex;
     justify-content: space-between;
@@ -801,4 +798,35 @@ body {
 
 .empty-state {
     padding: 40px 0;
+}
+
+.auth-body {
+    background: #f8fafc;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.auth-link {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
 }
