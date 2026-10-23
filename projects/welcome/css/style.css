@@ -830,3 +830,60 @@ body {
 .auth-link:hover {
     text-decoration: underline;
 }
+.input-disabled,
+.form-control:disabled {
+    background-color: #f1f5f9;
+    cursor: not-allowed;
+    color: #64748b;
+}
+
+.required-asterisk {
+    color: #dc2626;
+}
+
+.form-divider {
+    margin: 24px 0;
+    border: 0;
+    border-top: 1px solid #e2e8f0;
+}
+
+.form-hint {
+    color: #64748b;
+    font-weight: normal;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+.auth-body {
+    background: #f8fafc;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.auth-link {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
+}
