@@ -14,6 +14,11 @@ body {
     padding: 20px;
 }
 
+.auth-body {
+    background: #f8fafc;
+}
+
+/*2. Layout Containers*/
 .support-container {
     max-width: 1140px;
     margin: 40px auto;
@@ -46,6 +51,7 @@ body {
     border: 1px solid #f1f5f9;
 }
 
+/*3. Header & User Navigation*/
 .support-header {
     display: flex;
     justify-content: space-between;
@@ -59,6 +65,14 @@ body {
     font-size: 1.6rem;
     font-weight: 600;
     color: #1b2559;
+}
+
+.auth-title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #1e293b;
 }
 
 .user-bar {
@@ -86,6 +100,7 @@ body {
     gap: 10px;
 }
 
+/*4. Stats Grid & Cards*/
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -127,6 +142,7 @@ body {
     border-left: 4px solid #16a34a;
 }
 
+/*5. Filters & Search*/
 .filter-bar {
     display: flex;
     gap: 12px;
@@ -155,6 +171,7 @@ body {
     border-color: #4f46e5;
 }
 
+/*6. Data Tables*/
 .table-responsive {
     width: 100%;
     overflow-x: auto;
@@ -236,6 +253,14 @@ body {
     text-align: center;
 }
 
+.th-role {
+    width: 190px;
+}
+
+.th-reset-pwd {
+    width: 270px;
+}
+
 .action-group {
     display: flex;
     gap: 6px;
@@ -262,6 +287,7 @@ body {
     text-decoration: underline;
 }
 
+/*7. Badges & Tags*/
 .badge {
     display: inline-block;
     padding: 6px 14px;
@@ -341,6 +367,7 @@ body {
     border: 1px solid #cbd5e1;
 }
 
+/*8. Buttons*/
 .btn {
     display: inline-flex;
     align-items: center;
@@ -356,13 +383,15 @@ body {
     transition: all 0.2s ease;
 }
 
-.btn-primary {
+.btn-primary,
+.btn-success {
     background-color: #4318ff;
     color: #ffffff;
     box-shadow: 0 4px 12px rgba(67, 24, 255, 0.25);
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.btn-success:hover {
     background-color: #3311db;
     transform: translateY(-2px);
 }
@@ -376,13 +405,14 @@ body {
     background-color: #dbe2f1;
 }
 
-.btn-success {
-    background-color: #4318ff;
-    color: #ffffff;
-}
-
-.btn-success:hover {
-    background-color: #3311db;
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .btn-status {
@@ -502,6 +532,13 @@ body {
     background: #fee2e2;
 }
 
+.btn-reset-pwd {
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+/*9. Forms & Inputs*/
 .form-group {
     margin-bottom: 16px;
 }
@@ -531,8 +568,15 @@ body {
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
+.input-disabled,
+.form-control:disabled {
+    background-color: #f1f5f9;
+    cursor: not-allowed;
+    color: #64748b;
+}
+
 .required-asterisk {
-    color: #ee5d50;
+    color: #dc2626;
 }
 
 .form-hint {
@@ -540,14 +584,51 @@ body {
     font-size: 0.8rem;
     display: block;
     margin-top: 4px;
+    font-weight: normal;
+}
+
+.form-divider {
+    margin: 24px 0;
+    border: 0;
+    border-top: 1px solid #e2e8f0;
 }
 
 .form-actions {
     display: flex;
     gap: 12px;
-    margin-top: 28px;
+    margin-top: 24px;
 }
 
+.reset-pwd-form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.input-reset-pwd {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    width: 140px;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.auth-link {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
+}
+
+/*10. Alerts & Notifications*/
 .alert-error {
     background: #fef2f2;
     color: #dc2626;
@@ -568,6 +649,7 @@ body {
     border: 1px solid #bbf7d0;
 }
 
+/*11. Detail View & Comments*/
 .detail-header {
     display: flex;
     justify-content: space-between;
@@ -731,40 +813,7 @@ body {
     resize: vertical;
 }
 
-.auth-title {
-    text-align: center;
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 24px;
-    color: #1e293b;
-}
-
-.reset-pwd-form {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.input-reset-pwd {
-    padding: 6px 12px;
-    font-size: 0.85rem;
-    width: 140px;
-}
-
-.btn-reset-pwd {
-    padding: 6px 14px;
-    font-size: 0.85rem;
-    white-space: nowrap;
-}
-
-.th-role {
-    width: 190px;
-}
-
-.th-reset-pwd {
-    width: 270px;
-}
-
+/*12. Utilities & Helper Classes*/
 .current-user-tag {
     color: #64748b;
     margin-left: 6px;
@@ -798,92 +847,4 @@ body {
 
 .empty-state {
     padding: 40px 0;
-}
-
-.auth-body {
-    background: #f8fafc;
-}
-
-.btn-submit {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.auth-footer {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 0.875rem;
-    color: #64748b;
-}
-
-.auth-link {
-    color: #4f46e5;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.auth-link:hover {
-    text-decoration: underline;
-}
-.input-disabled,
-.form-control:disabled {
-    background-color: #f1f5f9;
-    cursor: not-allowed;
-    color: #64748b;
-}
-
-.required-asterisk {
-    color: #dc2626;
-}
-
-.form-divider {
-    margin: 24px 0;
-    border: 0;
-    border-top: 1px solid #e2e8f0;
-}
-
-.form-hint {
-    color: #64748b;
-    font-weight: normal;
-}
-
-.form-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 24px;
-}
-.auth-body {
-    background: #f8fafc;
-}
-
-.btn-submit {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.auth-footer {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 0.875rem;
-    color: #64748b;
-}
-
-.auth-link {
-    color: #4f46e5;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.auth-link:hover {
-    text-decoration: underline;
 }
