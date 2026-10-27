@@ -78,7 +78,7 @@ projects/welcome/
         ├── profile.php           # หน้าแก้ไขโปรไฟล์
         └── manage_users.php      # หน้าจัดการผู้ใช้งาน (Admin)
 ```
-##  การติดตั้งและใช้งาน (Installation Guide)
+##  การติดตั้งและใช้งาน
 
 1. **คัดลอกไฟล์โปรเจกต์** ไปไว้ในไดเรกทอรีของ Web Server (เช่น `htdocs` สำหรับ XAMPP/Laragon หรือ `www` สำหรับ WampServer)
 2. **ตรวจสอบการเปิดใช้งาน PHP SQLite Extension** ในไฟล์ `php.ini` (โดยปกติระบบจำลองส่วนใหญ่จะเปิดใช้งานไว้แล้ว):
@@ -98,13 +98,13 @@ projects/welcome/
 
 ---
 
-## วิธีการติดตั้งและรันโปรแกรม (How to Run the Application)
+## วิธีการติดตั้งและรันโปรแกรม 
 
 สามารถเลือกวิธีรันโปรแกรมได้ 2 รูปแบบ ทั้งการใช้ **Local Server Package (XAMPP / Laragon / WAMP)** หรือการใช้ **PHP Built-in Development Server** โดยไม่ต้องติดตั้งระบบฐานข้อมูลแยกต่างหาก เนื่องจากระบบใช้ SQLite 3
 
 ---
 
-###  1. ความต้องการของระบบ (System Requirements)
+###  1. ความต้องการของระบบ 
 
 * **PHP:** เวอร์ชั่น 7.4 ขึ้นไป หรือ PHP 8.x
 * **PHP Extensionsที่ต้องเปิดใช้งาน:**
@@ -114,7 +114,7 @@ projects/welcome/
 
 ---
 
-###  2. การเตรียมสภาพแวดล้อม (PHP Configuration)
+###  2. การเตรียมสภาพแวดล้อม 
 
 ก่อนรันโปรแกรม กรุณาตรวจสอบให้แน่ใจว่าได้เปิดใช้งาน Extension สำคัญในไฟล์ `php.ini` เรียบร้อยแล้ว:
 
@@ -165,7 +165,7 @@ php -S localhost:8000
 http://localhost:8000/index.php?module=support
 ```
 
-##  โครงสร้างฐานข้อมูล (Database Schema)
+##  โครงสร้างฐานข้อมูล
 
 <img width="1048" height="940" alt="er diagram itsupport" src="https://github.com/user-attachments/assets/77ca8540-ddf4-45fb-b3d6-60e969910038" />
 
